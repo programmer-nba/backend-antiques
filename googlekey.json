@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "antiques-image",
+  "private_key_id": "ff0157682b069aef9ba8a8f76e33f6807b388fec",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDIRoHNwDCfAyE5\nee+hMK7tSB3tqs3DBzhr+ZrOS+guUSvp6ANpJ4o3sOl+OZ3R5/JMdG9AaD+Uh+wx\nMbrc+xYzHvx4LiRA/T6iBMwdjN1UgKjayyiosTpgacV6hddCJY89CTF7yu/+JTww\nu5wgagKjEytYH8zM1wbo1wG2yK2zyxbnPjtQA+tnlcGX53oWWjfx+F+xGhlri+gw\nSb8ueMU7/320r4jL1BT7nWwic9iauT9adtZbtROIxcvXXez0UsnK1cQ5pflIBY47\nuxNWLRdenL+ZuYsMCM2Crwuvi+RG7gmtb4p6FmegUtFs6/eO6BlJHUlJVBTq6e1s\n+8bmfIn/AgMBAAECggEAHQkn2YojInKkNv6IMODrg4hAmov4X+2kjvb1rDISG+D1\n0mgqUm0Cm3dhKsU0rdGIbfA1jutuSFz6b9lrY41dlxTHeq8J34g3s+qpIyGglxc+\nI9ZvcyGauo6rLEvKPRNP9IPoMi/mYnzIgLI6fPKRpk3pq1GU8h+8pzZAz9zBXj7x\n74ZqV1jDTlFn4ZL449Wg4wXSTLWDDnvz6BmNO1Ily8fh79b44NzkBFH5SWE98nMp\ngFIijKLIsHL3anS7XYN5iLKl/sEBnO+cBsBmvYjxF+HvUxA8MnH2lfshFcvCQBlj\n8oyVK2hgNm4hqC5UVKKcl39LqlgYayEZaLjsakd9WQKBgQD7+KLiyQe9WuIPUWr6\nrF7r9dEIlEpb1sYBqLTu/Cydy7CRB2Za+96oFZJVosjyM/0iIDWHlQf3Xdb4onCb\nKK5qHiWpT1ZwqZ2MHA6Gkx3wJBBIcxx3SvoLHxsYEJIk3qS6ZO9FUvGjv/04JM2L\nlASx7V4MVM/KrIYA038TO0nfmQKBgQDLekU9PYWZYBXN62VGEh6gcpOWyrGmwque\n1SNfsu1Z/9fKKCKr3sG2GOz2bUczoOpgdu1lmmLffEwC7NLCJ7YFKwF7Sx4EC/bm\n8R5G5nGuRbdCTU1iyXI0naXk27Iy8XoWxYsRhEVxoz68NH27lZxVzVC2i7AC+R59\no59LB5oVVwKBgQCJx39p+vscc6HBNogE4lRVOmk/A7dVWK+VIKcvNv0+m67E3wL9\nJVSvHHyUDxtKNVtpWatro/ZjMRDnjAt/DFOy+yEk35koqdbYUk8vDysDsPSmaStb\nn8fyZOPv2L/RIV15/s9HXP98xvKzzIwIkruuf1k57PZioMv1j7Cg136hoQKBgEKf\nTCBbDm1DiqAbnNMuh5ydJznOMBCb2Lluq+Bfo1s+a5cjQQbpLp/C1YNyEEgVPehL\nyDrmK81k0zZ5+B/eBLj4dcm6tJ86k6LV+8XXGg2ngfNRgC8CKkSUAYdHb7dCXWkr\nUPdxSZOFkbrprOlIeSGW0gCTCBRRIOyeMD/Ow2KNAoGBAMujYsdUwO9u+8SmBLOl\n5Em2IPr00CA5GotDvL4Tosn2BKbNh35a7xophwLN9Bod8vqi6UOZ80idVoUo4hQ/\nCRzMDO5iV6YLTunmljmYc/Jj/pSB7Lkn3JQH0mPWrvqDT8v1iCbvk0Ty+7kX9lst\n2Qc3grbxpese855wSiMUbcrC\n-----END PRIVATE KEY-----\n",
+  "client_email": "googledrive@antiques-image.iam.gserviceaccount.com",
+  "client_id": "117404829223029649123",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/googledrive%40antiques-image.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
