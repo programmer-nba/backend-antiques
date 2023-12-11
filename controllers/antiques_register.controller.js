@@ -6,6 +6,7 @@ module.exports.CreateRegister = async (req, res) => {
     try{
         
         const telephone = req.body.telephone;
+        const name = req.body.name;
         const username = req.body.username;
         const password = await bcrypt.hash(req.body.password, 10);
         const level = req.body.level;
@@ -24,6 +25,7 @@ module.exports.CreateRegister = async (req, res) => {
  
         let regisData = {
             telephone: telephone,
+            name: name,
             username: username,
             password: password,
             level: level,
