@@ -5,8 +5,8 @@
 //Dev
 require("dotenv").config();
 
-const fs = require("fs");
-const https = require("https");
+const fs = require('fs');
+const https = require('https');
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
@@ -14,19 +14,21 @@ const cors = require("cors");
 const connection = require("./config/db");
 connection();
 
-app.use(bodyParser.json({limit: "50mb", type: "application/json"}));
-app.use(bodyParser.urlencoded({extended: true}));
+
+
+app.use(bodyParser.json({limit: '50mb', type: 'application/json'}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({ origin: ['http://localhost:3000','http://antiques.nbadigital.tech'], }))
 //--------------------------------------- ANTIQUES---------------------------------------//
-var CategoryRouter = require("./routes/antiques/antiques.js");
-var RegisterAntiquesRouter = require("./routes/antiques/register_antiques.js");
-var UserAntiques = require("./routes/antiques/user_antiques.js");
-var loginAntiques = require("./routes/antiques/login.js");
-var Customer = require("./routes/antiques/customer.js");
-var Order = require("./routes/antiques/order.js");
-var TestCamera = require("./routes/antiques/testcamera.js");
+var CategoryRouter = require('./routes/antiques/antiques.js');
+var RegisterAntiquesRouter = require('./routes/antiques/register_antiques.js');
+var UserAntiques = require('./routes/antiques/user_antiques.js')
+var loginAntiques = require('./routes/antiques/login.js')
+var Customer = require('./routes/antiques/customer.js')
+var Order = require('./routes/antiques/order.js')
+var TestCamera = require('./routes/antiques/testcamera.js')
 
 // Antiques
 app.use("/antiques/", CategoryRouter);
@@ -41,9 +43,14 @@ app.use("/antiques/customer/", Customer)
 // Order data 
 app.use("/antiques/order/", Order)
 // TEST CAMERA
-app.use("/antiques/camera/", TestCamera);
+app.use("/camera/", TestCamera);
 // Report 
 app.use("/antiques/report/", require('./routes/antiques/report.js'))
 
-const port = process.env.PORT || 9150;
-app.listen(port, console.log(`Listening on port ${port}...`));
+//--------------------------------------------------------------------------------------//
+
+
+
+
+const port = process.env.PORT || 9030;
+app.listen(port, console.log(`Listening on port ${port}...`)); 

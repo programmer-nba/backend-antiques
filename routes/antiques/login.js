@@ -4,6 +4,6 @@ const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/auth.admin");
 
 
-router.post("/login", Login.Login);
+router.post("/login",auth , Login.Login);
 
 module.exports = router;
