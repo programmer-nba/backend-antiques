@@ -15,7 +15,8 @@ const orderSchema = new mongoose.Schema(
         pay_status: {type:Number},
         warehouse: {type:String},
         unit: {type:String},
-        detail_id: {type:Number}
+        detail_id: {type:Number},
+        trackorder: {type:String}
     },
     {timestamp: true}
 );

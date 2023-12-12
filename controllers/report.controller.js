@@ -22,7 +22,8 @@ module.exports.ReceiptOrder = async (req,res) => {
             customer_name_en: getCustomer.fullname_en,
             orderList: getOrder.order_detail,
             total: getOrder.total,
-            totalweight: getOrder.total_weight
+            totalweight: getOrder.total_weight,
+            trackorder: getOrder.trackorder
         }
         console.log("getOrder", getOrder)
         console.log("getCustomer", getCustomer)
@@ -49,6 +50,49 @@ module.exports.ReceiptCashBill = async (req, res) => {
           const sumWeight = data.reduce((accumulator, currentValue) => {
             return accumulator + currentValue.qty;
           }, 0);
+
+          function convertToBahtWords(numberString) {
+            const bahtWords = ["", "หนึ่ง", "สอง", "สาม", "สี่", "ห้า", "หก", "เจ็ด", "แปด", "เก้า"];
+            const unitWords = ["", "สิบ", "ร้อย", "พัน", "หมื่น", "แสน", "ล้าน"];
+          
+            const numberArray = numberString.split(".");
+            const integerPart = numberArray[0];
+            const decimalPart = numberArray[1] || "0";
+          
+            function convertGroup(group) {
+              let result = "";
+              for (let i = 0; i < group.length; i++) {
+                const digit = parseInt(group[i]);
+                if (digit !== 0) {
+                  result += bahtWords[digit] + unitWords[group.length - i - 1];
+                }
+              }
+              return result;
+            }
+          
+            let bahtWordsString = "";
+          
+            // Convert integer part
+            for (let i = 0; i < integerPart.length; i += 6) {
+              const group = integerPart.slice(i, i + 6);
+              bahtWordsString = convertGroup(group) + bahtWordsString;
+            }
+          
+            // Convert decimal part
+            if (decimalPart !== "0") {
+              bahtWordsString += "จุด";
+              for (let i = 0; i < decimalPart.length; i++) {
+                const digit = parseInt(decimalPart[i]);
+                bahtWordsString += bahtWords[digit];
+              }
+            }
+          
+            return bahtWordsString || "ศูนย์";
+          }
+          
+          const numberString = sumPrice.toString();
+          const bahtWords = convertToBahtWords(numberString);
+          console.log(" : ", bahtWords)
         let cashBillData = {
             fullname_th: getCustomer.fullname_th,
             fullname_en: getCustomer.fullname_en,
@@ -58,6 +102,8 @@ module.exports.ReceiptCashBill = async (req, res) => {
             queue: getOrder.queue,
             totalPrice: sumPrice,
             totalWeight: sumWeight,
+            createAt: getDatetime,
+            bathText: bahtWords
         
         }
         console.log("getOrder", getOrder)
@@ -66,13 +112,14 @@ module.exports.ReceiptCashBill = async (req, res) => {
         console.log("Total Weight : ", sumWeight)
         console.log("Cash Bill Data : ", cashBillData)
         return res.status(200).send({message: "Get Receipt Cash Bill Success", data: cashBillData})
-    }catch{
+    }catch(error){
         return res.status(500).send({message: "Internal server error", error: error.message});
     }
 }
 
 module.exports.OrderSummaryReportByDate = async (req,res) => {
     try{
+      console.log("dadaadadad ")
       var StartDateData = new Date(req.body.StartDate)
       var EndDateData = new Date(req.body.EndDate)
       const getSummaryData = await Order.find({
@@ -82,36 +129,108 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
           }
         
     })
-    const sumByDetailIdAndDate = {};
+    function calculateTotalByDay(getSummaryData) {
+      const totalsByDay = {};
+    
+      getSummaryData.forEach(order => {
+        const createDate = new Date(order.createAt);
+        // Extract the date part (YYYY-MM-DD)
+        const dayKey = createDate.toISOString().split('T')[0];
+        // Initialize total for the day if not present
+        if (!totalsByDay[dayKey]) {
+          totalsByDay[dayKey] = 0;
+        }
+        // Extract and parse the "total" value, adding it to the total for the day
+        const orderTotal = parseFloat(order.total);
+        if (!isNaN(orderTotal)) {
+          totalsByDay[dayKey] += orderTotal;
+        }
+      });
+      return totalsByDay;
+    }
+  
+    // Example: Calculate total amount by day
+    const totalAmountByDay = calculateTotalByDay(getSummaryData);
+    console.log('Total Amount by Day:', totalAmountByDay);
 
-        // Loop through the data
-        getSummaryData.forEach((order) => {
-          // Extract the date from the order's createAt field
-          const orderDate = new Date(order.createAt).toLocaleDateString();
+    function calculateOverallSum(totalAmountByDay) {
+      let overallSum = 0;
+    
+      // Iterate through the values and sum them up
+      Object.values(totalAmountByDay).forEach(value => {
+        overallSum += value;
+      });
+    
+      return overallSum;
+    }
+    
+    // Example: Calculate the overall sum
+    const overallSum = calculateOverallSum(totalAmountByDay);
+    console.log('Overall Sum:', overallSum);
 
-          // Check if order has order_detail array
-          if (order.order_detail && order.order_detail.length > 0) {
-            // Loop through the order_detail array
-            order.order_detail.forEach((detail) => {
-              const detailId = detail.detail_id;
-              const total = detail.total;
+    const sumPrice = totalAmountByDay.reduce((accumulator, currentValue) => {
+      return accumulator + currentValue.total;
+    }, 0);
+    // function calculateTotal(data) {
+    //   return data.reduce((total, order) => {
+    //     // Extract and parse the "total" value, adding it to the total accumulator
+    //     const orderTotal = parseFloat(order.total);
+    //     return isNaN(orderTotal) ? total : total + orderTotal;
+    //   }, 0);
+    // }
+    // const sumByDetailIdAndDate = {};
 
-              // If sumByDetailIdAndDate already has a sum for the detail_id and date, add to it
-              if (sumByDetailIdAndDate[detailId] && sumByDetailIdAndDate[detailId][orderDate]) {
-                sumByDetailIdAndDate[detailId][orderDate] += total;
-              } else {
-                // If not, create a new entry for the detail_id and date
-                if (!sumByDetailIdAndDate[detailId]) {
-                  sumByDetailIdAndDate[detailId] = {};
-                }
-                sumByDetailIdAndDate[detailId][orderDate] = total;
-              }
-            });
-          }
-        });
+    //     // Loop through the data
+    //     getSummaryData.forEach((order) => {
+    //       // Extract the date from the order's createAt field
+    //       const orderDate = new Date(order.createAt).toLocaleDateString();
 
-    console.log("Sum by detail_id and date:", sumByDetailIdAndDate);
-      return res.status(200).send({message: "Get Order Summary Report",data: sumByDetailIdAndDate})
+    //       // Check if order has order_detail array
+    //       if (order.order_detail && order.order_detail.length > 0) {
+    //         // Loop through the order_detail array
+    //         order.order_detail.forEach((detail) => {
+    //           const detailId = detail.detail_id;
+    //           const total = detail.total;
+
+    //           // If sumByDetailIdAndDate already has a sum for the detail_id and date, add to it
+    //           if (sumByDetailIdAndDate[detailId] && sumByDetailIdAndDate[detailId][orderDate]) {
+    //             sumByDetailIdAndDate[detailId][orderDate] += total;
+    //           } else {
+    //             // If not, create a new entry for the detail_id and date
+    //             if (!sumByDetailIdAndDate[detailId]) {
+    //               sumByDetailIdAndDate[detailId] = {};
+    //             }
+    //             sumByDetailIdAndDate[detailId][orderDate] = total;
+    //           }
+    //         });
+    //       }
+    //     });
+    //     // console.log(getSummaryData)
+    //     var getSummaryData2 = getSummaryData
+    //     const summaryByDate = {};
+
+    //     getSummaryData2.forEach(order => {
+    //       const orderDate = new Date(order.createAt).toLocaleDateString(); // Extract the date part
+      
+    //       if (!summaryByDate[orderDate]) {
+    //         summaryByDate[orderDate] = {
+    //           totalAmount: 0,
+    //           getSummaryData2: [],
+    //         };
+    //       }
+      
+    //       const orderTotal = parseFloat(order.total) || 0;
+    //       summaryByDate[orderDate].totalAmount += orderTotal;
+
+    //       summaryByDate[orderDate].getSummaryData2.push(getSummaryData2);
+    //     });
+        // console.log("getSummaryData", getSummaryData)
+        
+        // return "summaryByDate : "+summaryByDate;
+        
+      // console.log("getSummaryData : ", getSummaryData)
+    // console.log("Sum by detail_id and date:", sumByDetailIdAndDate);
+      return res.status(200).send({message: "Get Order Summary Report",data: getSummaryData2})
     }catch(error){
       return res.status(500).send({message: "Internal server error", error: error.message});
     }
@@ -134,29 +253,16 @@ module.exports.PurchaseSummary = async (req,res) => {
         const sumPrice = chkonetwo.reduce((accumulator, currentValue) => {
             return accumulator + currentValue.total;
           }, 0);
-          console.log("chkonetwo", chkonetwo)
-          console.log("sumPrice", sumPrice)
-        // console.log("chkonetwo", chkonetwo)
-        // console.log("sumPrice", sumPrice)
-        // console.log("StartDateData", StartDateData)
-        // console.log("EndDateData", EndDateData)
-        // console.log(getSummaryData[0].order_detail[0].detail_id);
-        // for(let i = 0; i < getSummaryData.length; i++){
-        //     console.log(getSummaryData[i].customer_class);
-        //     const sumPrice = getSummaryData.reduce((accumulator, currentValue) => {
-        //         return accumulator + currentValue.total;
-        //       }, 0);
-        //       console.log("sumPrice", sumPrice)
-        // }
+        
         const sumByDetailId = {};
         const calculateOrderDetailTotal = (order_detail) =>
         order_detail.reduce((sum, item) => sum + item.total, 0);
         const result = getSummaryData.map((document) => ({
             _id: document._id,
             totalOrderDetail: calculateOrderDetailTotal(document.order_detail),
-          }));
-        // console.log(result);
 
+          }));
+        // console.log("order_detail", getSummaryData[0].order_detail);
         getSummaryData.forEach((order) => {
             if(order.order_detail && order.order_detail.length > 0){
                 // console.log(order.order_detail)
@@ -193,8 +299,7 @@ module.exports.PurchaseSummary = async (req,res) => {
             }
         }
 
-        )
-        console.log("Sum by detail_id:", sumByDetailId);
+        ) 
 
         const sumByDetailIdAndDate = {};
 
@@ -220,12 +325,14 @@ module.exports.PurchaseSummary = async (req,res) => {
                 }
                 sumByDetailIdAndDate[detailId][orderDate] = total;
               }
-            });
+            }); 
           }
         });
-    console.log("Sum by detail_id and date:", sumByDetailIdAndDate);
-          
-    return res.status(200).send({message:"Get PurchaseSummary Success",data: sumByDetailId })
+        
+        // console.log("sumByDetailIdAndDate : ", sumByDetailIdAndDate)
+    // console.log("Sum by detail_id and date:", sumByDetailIdAndDate);
+
+    return res.status(200).send({message:"Get PurchaseSummary Success",data: sumByDetailIdAndDate })
     }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
     }

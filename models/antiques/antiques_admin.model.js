@@ -4,6 +4,7 @@ const Joi = require("joi");
 const adminantiquesSchema = new mongoose.Schema(
     {
         telephone: {type:String},
+        name: {type:String},
         username : {type:String},
         password :{type:String},
         level :{type:String},

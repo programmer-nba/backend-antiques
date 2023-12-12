@@ -156,39 +156,6 @@ module.exports.CreateCategoryType = async (req, res) => {
     }
 }
 
-// module.exports.CreateCategory = async (req, res) => {
-//     try{
- 
-//         const getCateName_th = req.body.category_name_th
-//         const getCateName_en = req.body.category_name_en
-//         const getTypeId = await Category.find().sort({category_id: -1}).limit(2)
-//         const genTypeId = parseInt(getTypeId[0].category_id)+1 ;
-//         const category_type_id = req.body.type_id
-//         const chk_name = await Category.find({category_name: getCateName});
-//         // console.log(genTypeId);
-//         if(chk_name.length > 0){
-//             console.log("ชื่อหมวดหมู่นี้ได้สร้างไปแล้ว");
-//             return res.status(200).send({message:"ชื่อหมวดหมู่นี้ได้สร้างไปแล้ว"});
-//         }else{
-//             let createcategory = {
-//                 category_id: genTypeId,
-//                 category_name : getCateName,
-//                 category_type_id: category_type_id, 
-//             };
-
-//             const createCate = new Category(createcategory);
-//             const createCateData = await createCate.save();
-//             return res.status(200).send({message:"สร้างหมวดหมู่สำเร็จ"});
-//         }
-        
-   
-//     }catch(error){
-//         console.error(error);
-//         return res.status(500).send({message: "Internal Server Error"});
-
-//     }
-// }
-
 module.exports.CreateType = async (req, res) => {
     try{
  
