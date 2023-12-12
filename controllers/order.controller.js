@@ -354,20 +354,21 @@ module.exports.ApproveOrder = async (req,res) => {
       _id: getQueueToday.customer_id
     });
     console.log("getCus : ", getCus)
-    var gentoString = (getQueueToday._id).toString()
-    console.log(gentoString)
+    var gentoString = (getCus._id).toString()
+    // console.log(gentoString)
     const updateData = {
       $set: {
         order_detail: req.body.items,
         status: "APPROVE",
-        customer_id: getCus
+        customer_id: getCus.id
       },
      
     };
 
 
-    const result = await Order.findByIdAndUpdate(gentoString, updateData, { new: true })
-    return res.status(200).send({message: "Approve Data Success" })
+
+    const result = await Order.findByIdAndUpdate(getCus.id, updateData, { new: true })
+    return res.status(200).send({message: "Approve Data Success", data: result })
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
