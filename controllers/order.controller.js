@@ -114,7 +114,7 @@ module.exports.CreateDataOrder = async (req,res) => {
       }).sort({queue: -1}).limit(1);
      
       if(!getQueueToday){
-        var newQueue = 1
+        var newQueue = 1 
       }else{
         var newQueue = getQueueToday.queue+1
       }
