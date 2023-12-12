@@ -13,7 +13,7 @@ router.post("/getqueuetoday", auth, Order.GetQueueToday)
 router.get("/getlastqueue", auth, Order.getlastQueueToday)
 router.post("/getorderbydateandqueue", auth, Order.getOrderByDateAndQueue)
 router.post("/approveorder", auth, Order.ApproveOrder)
-
 router.post("/saveafterfinish", auth, Order.saveAfterFinish)
+router.post("/generatereceiptnumber", auth, Order.GenOrderNumber)
 // router.post("/sendtofinish", auth, Order.SendToFinish)
 module.exports = router;

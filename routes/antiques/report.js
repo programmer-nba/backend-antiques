@@ -6,7 +6,7 @@ const authAdmin = require("../../lib/auth.admin");
 
 // ---------------------- Receipt -----------------------//
 router.post("/receiptorder", auth, Report.ReceiptOrder); // ใบเสร็จรับเงิน
-router.get("/receiptcashbill", auth, Report.ReceiptCashBill); // ใบเสร็จเงินสด
+router.post("/receiptcashbill", auth, Report.ReceiptCashBill); // ใบเสร็จเงินสด
 
 //----------------------- Roport -------------------------//
 router.post("/purchasesummary", auth, Report.PurchaseSummary) // รายงานสรุปการซื้อตามรายการสินค้า
