@@ -342,6 +342,7 @@ module.exports.ApproveOrder = async (req,res) => {
     const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
     console.log("startOfDay", startOfDay)
     console.log("endOfDay", endOfDay)
+   
     var getQueueToday = await Order.findOne({
       queue: req.body.queue,
       createAt: {
@@ -349,15 +350,21 @@ module.exports.ApproveOrder = async (req,res) => {
         $lte: endOfDay
       }
     })
+    var getCus = await Customer.findOne({
+      _id: getQueueToday.customer_id
+    });
+    console.log("getCus : ", getCus)
     var gentoString = (getQueueToday._id).toString()
     console.log(gentoString)
     const updateData = {
       $set: {
-
+        order_detail: req.body.items,
         status: "APPROVE",
-        
+        customer_id: getCus
       },
+     
     };
+
 
     const result = await Order.findByIdAndUpdate(gentoString, updateData, { new: true })
     return res.status(200).send({message: "Approve Data Success" })
