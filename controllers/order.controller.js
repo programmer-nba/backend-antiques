@@ -20,7 +20,7 @@ module.exports.getOrder = async (req,res) => {
       // var gentoString = genOrderID.toString();
 
 
-      console.log("genOrderId", genOrderId)
+      // console.log("genOrderId", genOrderId)
       
       return res.status(200).send({message:" Get Order Success ",data: getAllOrder})
   }catch(error){
@@ -62,45 +62,42 @@ module.exports.CreateDataOrder = async (req,res) => {
         warehouse: "WH01",
         unit: "KG"
       }
-        const createOrder = new Order(orderData);
-        const createOrderData = await createOrder.save();
+      const createOrder = new Order(orderData);
+      const createOrderData = await createOrder.save();
         return res.status(200).send({message: "Create Order Success"})
     }else{
       var newDate = new Date(req.body.createAt);
-    const startOfDay = new Date(newDate.toISOString(req.body.createAt).split('T')[0] + 'T00:00:00.000Z');
-    const endOfDay = new Date(newDate.toISOString(req.body.createAt).split('T')[0] + 'T23:59:59.999Z');
-    const getOrderNow = await Order.find({
-      $and: [
-      { queue: req.body.queue },
-      { createAt: {
-        $gte: startOfDay,
-        $lte: endOfDay
-      } }
-    ]});
+      const startOfDay = new Date(newDate.toISOString(req.body.createAt).split('T')[0] + 'T00:00:00.000Z');
+      const endOfDay = new Date(newDate.toISOString(req.body.createAt).split('T')[0] + 'T23:59:59.999Z');
+      const getOrderNow = await Order.find({
+              $and: [
+                  { queue: req.body.queue },
+                  { createAt:   {$gte: startOfDay,
+                                $lte: endOfDay
+                                } 
+                    }
+              ]});
 
-    
-
-    if(getOrderNow.length != 0){
-      var items = req.body.items;
-      const updateData = {
-        $set: {
-          order_detail: req.body.items,
-          total: req.body.total,
-          status: "FINISH"   
-        },
-      };
+          if(getOrderNow.length != 0){
+            var items = req.body.items;
+            const updateData = {
+              $set: {
+                order_detail: req.body.items,
+                total: req.body.total,
+                status: "FINISH"   
+              },
+            };
 
       const getdataOrderId = await Order.findOne({orderId: getOrderNow[0].orderId})
       console.log("getdataOrderId : ", getdataOrderId)
       const result = await Order.findByIdAndUpdate(getdataOrderId._id, updateData, { new: true })
-      
+
       return res.status(200).send({message: "Update Data Success", data: result})
     }else{
-      
       const getOrderId = await Order.findOne().sort({orderId: -1}).limit(1);
-      if(!getOrderId){
-        getOrderId = 0
-      }
+        if(!getOrderId){
+          getOrderId = 0
+        }
       const genOrderId = (getOrderId.orderId)+1
       const currentDate = new Date();
       const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
@@ -124,70 +121,63 @@ module.exports.CreateDataOrder = async (req,res) => {
       if(customer.length == 0){
           var customer = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
           var customerId = (customer._id).toString();
-          console.log("customerId : ", customerId)
-  
       }else{
           var customer = req.body.customers
-          var customerId = customer._id
-          
+          var customerId = customer._id 
       }
-    var getLastOrder = await Order.findOne().sort({orderId: -1}).limit(1);
+
+      var getLastOrder = await Order.findOne().sort({orderId: -1}).limit(1);
     
-    if(currentDate.getDate() < 10 ){
-      var getDay = "0"+currentDate.getDate()
-    }else{
-      var getDay = currentDate.getDay()
-    }
-    if(currentDate.getMonth() < 10){
-      var getMonth = "0"+(currentDate.getMonth())
-    }else{
-      var getMonth = currentDate.getMonth()+1
-    }
-    var Year = currentDate.getFullYear();
-    var getYear = Year.toString().slice(2,4)
+      if(currentDate.getDate() < 10 ){
+        var getDay = "0"+currentDate.getDate()
+      }else{
+        var getDay = currentDate.getDay()
+      }
+      if(currentDate.getMonth() < 10){
+        var getMonth = "0"+(currentDate.getMonth())
+      }else{
+        var getMonth = currentDate.getMonth()+1
+      }
+      var Year = currentDate.getFullYear();
+      var getYear = Year.toString().slice(2,4)
 
     
-    if(getLastOrder.createAt.getDate() < 10){
-      var chkDay = "0"+getLastOrder.createAt.getDate()
-    }else{
-      var chkDay = getLastOrder.createAt.getDate()
-    }
-    if(getLastOrder.createAt.getMonth()< 10){
-      var chkMount = "0"+getLastOrder.createAt.getMonth()+1
-    }else{
-      var chkMount = getLastOrder.createAt.getMonth()+1
-    }
-    var dateInData = getLastOrder.createAt.getFullYear()+"-"+chkMount+"-"+chkDay
-    var dateToday = Year+"-"+getMonth+"-"+getDay
+      if(getLastOrder.createAt.getDate() < 10){
+        var chkDay = "0"+getLastOrder.createAt.getDate()
+      }else{
+        var chkDay = getLastOrder.createAt.getDate()
+      }
+      if(getLastOrder.createAt.getMonth()< 10){
+        var chkMount = "0"+getLastOrder.createAt.getMonth()+1
+      }else{
+        var chkMount = getLastOrder.createAt.getMonth()+1
+      }
+      var dateInData = getLastOrder.createAt.getFullYear()+"-"+chkMount+"-"+chkDay
+      var dateToday = Year+"-"+getMonth+"-"+getDay
 
-    const generateOrderNumber = getLastOrder.trackorder
-    console.log("generateOrderNumber", generateOrderNumber)
-    const convertString = generateOrderNumber.toString()
-    const sliceOrderNumber = convertString.slice(8,12)
-    console.log("convertString : ", convertString)
-    console.log("dateInData : ", dateInData)
-    console.log("dateToday : ", dateToday)
-    console.log("sliceOrderNumber", sliceOrderNumber)
-    console.log("generateOrderNumber : ", generateOrderNumber)
-    if(dateInData == dateToday){
-      var gentoInt = (parseInt(sliceOrderNumber, 10))+1
-    }else{
-      var gentoInt = 1
-    }
-    console.log("gentoInt : ", gentoInt)
-    if(gentoInt < 10){
-          var genrateNumber = "0"+"0"+"0"+gentoInt.toString()
-    }else if (gentoInt < 100){
-      var genrateNumber = "0"+"0"+gentoInt.toString()
-    }else if (gentoInt < 1000){
-      var genrateNumber = "0"+gentoInt.toString()
-    }else if (gentoInt < 1000){
-      var genrateNumber = gentoInt.toString()
-    }
+      const generateOrderNumber = getLastOrder.trackorder
+    
+      const convertString = generateOrderNumber.toString()
+      const sliceOrderNumber = convertString.slice(8,12)
+   
+        if(dateInData == dateToday){
+          var gentoInt = (parseInt(sliceOrderNumber, 10))+1
+        }else{
+          var gentoInt = 1
+        }
+        console.log("gentoInt : ", gentoInt)
+        if(gentoInt < 10){
+              var genrateNumber = "0"+"0"+"0"+gentoInt.toString()
+        }else if (gentoInt < 100){
+          var genrateNumber = "0"+"0"+gentoInt.toString()
+        }else if (gentoInt < 1000){
+          var genrateNumber = "0"+gentoInt.toString()
+        }else if (gentoInt < 1000){
+          var genrateNumber = gentoInt.toString()
+        }
       const tracknumber = "OD"+getDay+getMonth+getYear+genrateNumber
 
-      console.log("tracknumber", tracknumber)
-      var getWarehouse = req.body.wherehouse
+      var getWarehouse = req.body.wherehouse // wherehouse
         let orderData = {
           orderId: genOrderId,
           customer_id: customerId,
@@ -212,9 +202,9 @@ module.exports.CreateDataOrder = async (req,res) => {
     }
     
    
-  }catch(error){
-    return res.status(500).send({message: "Internal server error", error: error.message});
-  }
+      }catch(error){
+        return res.status(500).send({message: "Internal server error", error: error.message});
+      }
 }
 
 module.exports.GetFinishToday = async (req,res) => {
@@ -223,13 +213,12 @@ module.exports.GetFinishToday = async (req,res) => {
     const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
     const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
     var getOrderFinishToday = await Order.find({
-      createAt: {
-        $gte: startOfDay,
-        $lte: endOfDay
-      },
-      status: "FINISH"
-    });
-    console.log(getOrderFinishToday)
+        createAt: {
+          $gte: startOfDay,
+          $lte: endOfDay
+        },
+        status: "FINISH"
+      });
     return res.status(200).send({message: "Get Data Finish Today Successfully",data: getOrderFinishToday})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
@@ -321,7 +310,7 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
       }
     })
     const newQueue = parseInt(getQueueToday.queue)
-    if (getQueueToday.length == 0)
+    if (!getQueueToday)
     // มีการใช้ชื่อนี้ไปแล้ว
     return res.status(401).send({
       message: "ไม่คิวรายการนี้ในระบบ",
