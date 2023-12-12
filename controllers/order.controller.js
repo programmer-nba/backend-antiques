@@ -121,10 +121,10 @@ module.exports.CreateDataOrder = async (req,res) => {
 
       var customer = req.body.customers;
       var item = req.body.items;
-      if(!req.body.customers){
+      if(customer.length == 0){
           var customer = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
           var customerId = (customer._id).toString();
-          
+          console.log("customerId : ", customerId)
   
       }else{
           var customer = req.body.customers
