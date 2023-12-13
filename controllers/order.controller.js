@@ -353,13 +353,14 @@ module.exports.ApproveOrder = async (req,res) => {
     var getCus = await Customer.findOne({
       _id: getQueueToday.customer_id
     });
-    console.log("getCus : ", getCus)
+    var getOrderID = await Order.findOne({orderId: getQueueToday.orderId});
+    console.log("getOrderID : ", getOrderID._id)
     var gentoString = (getCus._id).toString()
     // console.log(gentoString)
     const updateData = {
       $set: {
         order_detail: req.body.items,
-        status: "APPROVE",
+        status: "APPROVEEEEE",
         customer_id: getCus.id
       },
      
@@ -367,7 +368,7 @@ module.exports.ApproveOrder = async (req,res) => {
 
 
 
-    const result = await Order.findByIdAndUpdate(getCus.id, updateData, { new: true })
+    const result = await Order.findByIdAndUpdate(getOrderID._id, updateData, { new: true })
     return res.status(200).send({message: "Approve Data Success", data: result })
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
