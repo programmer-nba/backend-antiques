@@ -10,5 +10,6 @@ router.post("/receiptcashbill", auth, Report.ReceiptCashBill); // ใบเส�
 
 //----------------------- Roport -------------------------//
 router.post("/purchasesummary", auth, Report.PurchaseSummary) // รายงานสรุปการซื้อตามรายการสินค้า
-router.post("/ordersummaryreportbydate", auth, Report.OrderSummaryReportByDate) //รายงานการซื้อประจำวัน/ตามเลขที่
+router.post("/ordersummaryreportbydate", auth, Report.OrderSummaryReportByDate) //รายงานการซื้อประจำวัน/ตามเลขที่ฃ
+router.post("/overviewantiques", auth, Report.OverviewAntiques)
 module.exports = router;

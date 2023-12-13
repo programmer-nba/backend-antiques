@@ -379,7 +379,7 @@ module.exports.getOrderData = async (req, res) => {
           message: 'Get Data Success',
           getCateOrder: {
             _id: '$_id',
-            category_id: '$category_id',
+            customer_id: '$customer_id',
             category_name_en: '$category_name_en',
             category_name_th: '$category_name_th',
             all_cate: {

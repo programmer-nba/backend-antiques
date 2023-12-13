@@ -240,103 +240,176 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
 
 module.exports.PurchaseSummary = async (req,res) => {
     try{
+        if(req.body.StartDate.length == 0 && req.body.EndDate.length == 0){
+          const getAllDate = await Order.find().sort({ orderId: -1 })
+          console.log("getAllDate", getAllDate)
+          return res.status(200).send({message:"Get All Data Success", data: getAllDate})
+        }else{
 
-        var StartDateData = new Date(req.body.StartDate)
-        var EndDateData = new Date(req.body.EndDate)
-
-        const getSummaryData = await Order.find({
-            createAt: {
-                $gte: StartDateData, // Start Date
-                $lte: EndDateData  // End Date
-              }
-        })
-        console.log("getSummaryData", getSummaryData)
-        const chkonetwo = getSummaryData[0].order_detail
-        const sumPrice = chkonetwo.reduce((accumulator, currentValue) => {
-            return accumulator + currentValue.total;
-          }, 0);
-        
-        const sumByDetailId = {};
-        const calculateOrderDetailTotal = (order_detail) =>
-        order_detail.reduce((sum, item) => sum + item.total, 0);
-        const result = getSummaryData.map((document) => ({
-            _id: document._id,
-            totalOrderDetail: calculateOrderDetailTotal(document.order_detail),
-
-          }));
-        // console.log("order_detail", getSummaryData[0].order_detail);
-        getSummaryData.forEach((order) => {
-            if(order.order_detail && order.order_detail.length > 0){
-                // console.log(order.order_detail)
-                order.order_detail.forEach((detail) => {
-                    const detailId = detail.detail_id;
-                    const qty = detail.qty;
-                    const total = detail.total;
-                    const description = detail.description;
-                    const startDate = req.body.StartDate
-                    const endDate = req.body.EndDate
-                    const unit = "KG";
-                    console.log("order.order_detail", detail.detail_id)
-                    
-                    
-                    if (sumByDetailId[detailId]) {
-                        sumByDetailId[detailId].total += total;
-                        sumByDetailId[detailId].qty += qty;
-                        sumByDetailId[detailId].unit = unit;
-                        sumByDetailId[detailId].description = description;
-                        sumByDetailId[detailId].startDate = startDate;
-                        sumByDetailId[detailId].endDate = endDate;
-                      } else {
-                        // If not, create a new entry for the detail_id
-                        sumByDetailId[detailId] = { total,
-                                                    qty,
-                                                    unit,
-                                                    description,
-                                                    startDate,
-                                                    endDate
-                                                  };
-
-                      }
+          var StartDateData = new Date(req.body.StartDate)
+          var EndDateData = new Date(req.body.EndDate)
+          console.log("StartDate : ", req.body.StartDate.length)
+          const getSummaryData = await Order.find({
+              createAt: {
+                  $gte: StartDateData, // Start Date
+                  $lte: EndDateData  // End Date
                 }
-                )     
-            }
-        }
-
-        ) 
-
-        const sumByDetailIdAndDate = {};
-
-        // Loop through the data
-        getSummaryData.forEach((order) => {
-          // Extract the date from the order's createAt field
-          const orderDate = new Date(order.createAt).toLocaleDateString();
-
-          // Check if order has order_detail array
-          if (order.order_detail && order.order_detail.length > 0) {
-            // Loop through the order_detail array
-            order.order_detail.forEach((detail) => {
-              const detailId = detail.detail_id;
-              const total = detail.total;
-
-              // If sumByDetailIdAndDate already has a sum for the detail_id and date, add to it
-              if (sumByDetailIdAndDate[detailId] && sumByDetailIdAndDate[detailId][orderDate]) {
-                sumByDetailIdAndDate[detailId][orderDate] += total;
-              } else {
-                // If not, create a new entry for the detail_id and date
-                if (!sumByDetailIdAndDate[detailId]) {
-                  sumByDetailIdAndDate[detailId] = {};
-                }
-                sumByDetailIdAndDate[detailId][orderDate] = total;
+          })
+      
+          const chkonetwo = getSummaryData[0].order_detail
+          const sumPrice = chkonetwo.reduce((accumulator, currentValue) => {
+              return accumulator + currentValue.total;
+            }, 0);
+          
+          const sumByDetailId = {};
+          const calculateOrderDetailTotal = (order_detail) =>
+          order_detail.reduce((sum, item) => sum + item.total, 0);
+          const result = getSummaryData.map((document) => ({
+              _id: document._id,
+              totalOrderDetail: calculateOrderDetailTotal(document.order_detail),
+  
+            }));
+          // console.log("order_detail", getSummaryData[0].order_detail);
+          getSummaryData.forEach((order) => {
+              if(order.order_detail && order.order_detail.length > 0){
+                  // console.log(order.order_detail)
+                  order.order_detail.forEach((detail) => {
+                      const detailId = detail.detail_id;
+                      const qty = detail.qty;
+                      const total = detail.total;
+                      const description = detail.description;
+                      const startDate = req.body.StartDate
+                      const endDate = req.body.EndDate
+                      const unit = "KG";
+                      // console.log("order.order_detail", detail.detail_id)
+                      
+                      
+                      if (sumByDetailId[detailId]) {
+                          sumByDetailId[detailId].total += total;
+                          sumByDetailId[detailId].qty += qty;
+                          sumByDetailId[detailId].unit = unit;
+                          sumByDetailId[detailId].description = description;
+                          sumByDetailId[detailId].startDate = startDate;
+                          sumByDetailId[detailId].endDate = endDate;
+                        } else {
+                          // If not, create a new entry for the detail_id
+                          sumByDetailId[detailId] = { total,
+                                                      qty,
+                                                      unit,
+                                                      description,
+                                                      startDate,
+                                                      endDate
+                                                    };
+  
+                        }
+                  }
+                  )     
               }
-            }); 
           }
-        });
-        
-        console.log("sumByDetailId : ", sumByDetailId)
-
-
-    return res.status(200).send({message:"Get PurchaseSummary Success",data: sumByDetailId })
+  
+          ) 
+  
+          const sumByDetailIdAndDate = {};
+  
+          // Loop through the data
+          getSummaryData.forEach((order) => {
+            // Extract the date from the order's createAt field
+            const orderDate = new Date(order.createAt).toLocaleDateString();
+  
+            // Check if order has order_detail array
+            if (order.order_detail && order.order_detail.length > 0) {
+              // Loop through the order_detail array
+              order.order_detail.forEach((detail) => {
+                const detailId = detail.detail_id;
+                const total = detail.total;
+  
+                // If sumByDetailIdAndDate already has a sum for the detail_id and date, add to it
+                if (sumByDetailIdAndDate[detailId] && sumByDetailIdAndDate[detailId][orderDate]) {
+                  sumByDetailIdAndDate[detailId][orderDate] += total;
+                } else {
+                  // If not, create a new entry for the detail_id and date
+                  if (!sumByDetailIdAndDate[detailId]) {
+                    sumByDetailIdAndDate[detailId] = {};
+                  }
+                  sumByDetailIdAndDate[detailId][orderDate] = total;
+                }
+              }); 
+            }
+          });
+          
+          // console.log("sumByDetailId : ", sumByDetailId)
+  
+  
+      return res.status(200).send({message:"Get PurchaseSummary Success",data: sumByDetailId })
+        }
+       
     }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
     }
+}
+
+module.exports.OverviewAntiques = async (req, res) => {
+try{
+  var getCreateAt = new Date("2023-12-07T02:34:30.272+00:00")
+  console.log("createAt : ", getCreateAt)
+  var getOderdata = await Order.findOne({
+    createAt: getCreateAt
+  })
+  console.log("getOderdata", getOderdata);
+  
+  const getOrderData = await Order.aggregate([
+    {
+      $match: {
+        createAt: new RegExp('2023-12', 'i')
+      }
+    },
+    {
+      $lookup: {
+        from: 'customers',
+        let: { orderId: '$customer_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: [
+                  { $toString: '$_id' }, // Convert _id to string for comparison
+                  '$$orderId'
+                ]
+              }
+            }
+    
+          }
+         
+        ],
+        as: 'customerData'
+      }
+    },
+    {
+        $unwind: '$customerData'
+    },
+    {
+      $project: {
+        message: 'Get Data Success',
+        getCateOrder: {
+          _id: '$_id',
+          status: '$status',
+          fullname_th: '$customerData.fullname_th',
+          fullname_en: '$customerData.fullname_en',
+          class: '$customerData.class',
+          order_detail: '$customerData.order_detail',
+          total: '$customerData.total',
+          // all_details: 1
+        },
+      }
+    }
+    // Additional stages in the aggregation pipeline if needed
+  ]);
+
+  const getfromcustomer = await Customer.find();
+
+  // console.log("getOrderData : ", getOrderData)
+  return res.status(200).send({message: "Get Overview Success", data: getfromcustomer})
+  }catch(error){
+    return res.status(500).send({message: "Internal server error", error: error.message});
+  }
 }
