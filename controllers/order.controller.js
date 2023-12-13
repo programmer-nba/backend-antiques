@@ -360,7 +360,7 @@ module.exports.ApproveOrder = async (req,res) => {
     const updateData = {
       $set: {
         order_detail: req.body.items,
-        status: "APPROVEEEEE",
+        status: "APPROVE",
         customer_id: getCus.id
       },
      
