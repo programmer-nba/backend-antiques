@@ -20,7 +20,7 @@ app.use(bodyParser.json({limit: '50mb', type: 'application/json'}));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use(express.json());
-app.use(cors({ origin: ['http://localhost:3000','http://antiques.nbadigital.tech', 'https://antiques.nbadigital.tech'], }))
+app.use(cors({ origin: ['http://localhost:3000', 'https://antiques.nbadigital.tech'], }))
 //--------------------------------------- ANTIQUES---------------------------------------//
 var CategoryRouter = require('./routes/antiques/antiques.js');
 var RegisterAntiquesRouter = require('./routes/antiques/register_antiques.js');
