@@ -240,21 +240,27 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
 
 module.exports.PurchaseSummary = async (req,res) => {
     try{
-        if(req.body.StartDate.length == 0 && req.body.EndDate.length == 0){
+        if(false){
           const getAllDate = await Order.find().sort({ orderId: -1 })
           console.log("getAllDate", getAllDate)
           return res.status(200).send({message:"Get All Data Success", data: getAllDate})
         }else{
 
-          var StartDateData = new Date(req.body.StartDate)
-          var EndDateData = new Date(req.body.EndDate)
-          console.log("StartDate : ", req.body.StartDate.length)
-          const getSummaryData = await Order.find({
-              createAt: {
-                  $gte: StartDateData, // Start Date
-                  $lte: EndDateData  // End Date
-                }
-          })
+          if(req.body.StartDate.length == 0 && req.body.EndDate.length == 0){
+            console.log("StartDate : ", req.body.StartDate.length)
+            var getSummaryData = await Order.find()
+          }else{
+            var StartDateData = new Date(req.body.StartDate)
+            var EndDateData = new Date(req.body.EndDate)
+            console.log("StartDate : ", req.body.StartDate.length)
+            const getSummaryData = await Order.find({
+                createAt: {
+                    $gte: StartDateData, // Start Date
+                    $lte: EndDateData  // End Date
+                  }
+            })
+          }
+        
       
           const chkonetwo = getSummaryData[0].order_detail
           const sumPrice = chkonetwo.reduce((accumulator, currentValue) => {
@@ -405,7 +411,9 @@ try{
     // Additional stages in the aggregation pipeline if needed
   ]);
 
-  const getfromcustomer = await Customer.find();
+  const getfromcustomer = await Customer.aggregate([
+    
+  ])
 
   // console.log("getOrderData : ", getOrderData)
   return res.status(200).send({message: "Get Overview Success", data: getfromcustomer})

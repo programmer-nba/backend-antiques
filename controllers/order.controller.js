@@ -187,7 +187,7 @@ module.exports.CreateDataOrder = async (req,res) => {
           total: totalPrice,
           total_weight: totalQty,
           createAt: Date.now(), 
-          status: " ",
+          status: "FINISH",
           pay_status: 0,
           warehouse: "WH01",
           unit: "KG",
