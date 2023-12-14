@@ -233,7 +233,7 @@ module.exports.GetFinishToday = async (req,res) => {
   // addDataThis.push(newData)
   console.log()
      
-  const dadadadad = await Order.aggregate([
+  const dataOrder = await Order.aggregate([
     {
       $match:{
         status: "FINISH"
@@ -275,7 +275,6 @@ module.exports.GetFinishToday = async (req,res) => {
     },
     {
       $project: {
-        data: {
           _id: '$_id',
           orderId: '$orderId',
           customer_id: '$customer_id',
@@ -293,7 +292,7 @@ module.exports.GetFinishToday = async (req,res) => {
           trackorder: '$trackorder'
 
           // all_details: 1
-        },
+        
       }
     }
     // Additional stages in the aggregation pipeline if needed
@@ -303,7 +302,7 @@ module.exports.GetFinishToday = async (req,res) => {
       // getOrderFinishToday["customer_name"] = getCustomerName.fullname_th
       // console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
 
-    return res.status(200).send({message: "Get Data Finish Today Successfully",data: dadadadad})
+    return res.status(200).send({message: "Get Data Finish Today Successfully",data: dataOrder})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
