@@ -245,15 +245,15 @@ module.exports.PurchaseSummary = async (req,res) => {
           console.log("getAllDate", getAllDate)
           return res.status(200).send({message:"Get All Data Success", data: getAllDate})
         }else{
-
+         
           if(req.body.StartDate.length == 0 && req.body.EndDate.length == 0){
-            console.log("StartDate : ", req.body.StartDate.length)
+            // console.log("StartDate : ", req.body.StartDate.length)
             var getSummaryData = await Order.find()
           }else{
-            var StartDateData = new Date(req.body.StartDate)
+            var StartDateData = new Date(req.body.StartDate) 
             var EndDateData = new Date(req.body.EndDate)
-            console.log("StartDate : ", req.body.StartDate.length)
-            const getSummaryData = await Order.find({
+            // console.log("StartDate : ", req.body.StartDate.length)
+            var getSummaryData = await Order.find({
                 createAt: {
                     $gte: StartDateData, // Start Date
                     $lte: EndDateData  // End Date
@@ -364,11 +364,7 @@ try{
   console.log("getOderdata", getOderdata);
   
   const getOrderData = await Order.aggregate([
-    {
-      $match: {
-        createAt: new RegExp('2023-12', 'i')
-      }
-    },
+   
     {
       $lookup: {
         from: 'customers',
@@ -411,12 +407,12 @@ try{
     // Additional stages in the aggregation pipeline if needed
   ]);
 
-  const getfromcustomer = await Customer.aggregate([
+  // const getfromcustomer = await Customer.aggregate([
     
-  ])
+  // ])
 
   // console.log("getOrderData : ", getOrderData)
-  return res.status(200).send({message: "Get Overview Success", data: getfromcustomer})
+  return res.status(200).send({message: "Get Overview Success", data: getOrderData})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
