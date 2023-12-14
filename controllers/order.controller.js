@@ -225,14 +225,85 @@ module.exports.GetFinishToday = async (req,res) => {
       });
   
     const getCustomerName = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
-    let addCusNameData = {
-      fullname_th: getCustomerName.fullname_th
+    let newData = {
+      "customer_name": getCustomerName.fullname_th
+  } 
+    var addDataThis = getOrderFinishToday[0]
+  console.log("FIRST : ", getOrderFinishToday[0])
+  // addDataThis.push(newData)
+  console.log()
+     
+  const dadadadad = await Order.aggregate([
+    {
+      $match:{
+        status: "FINISH"
+      }
+    },
+    {
+      $match:{
+      createAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    },
+    },
+    
+    {
+      $lookup: {
+        from: 'customers',
+        let: { orderId: '$customer_id' },
+        pipeline: [
+          {
+            $match: {
+              $expr: {
+                $eq: [
+                  { $toString: '$_id' }, // Convert _id to string for comparison
+                  '$$orderId'
+                ]
+              }
+              
+            }
+  
+          }
+         
+        ],
+        as: 'customerData'
+      }
+    },
+    {
+        $unwind: '$customerData'
+    },
+    {
+      $project: {
+        data: {
+          _id: '$_id',
+          orderId: '$orderId',
+          customer_id: '$customer_id',
+          customer_name: '$customerData.fullname_th',
+          customer_class: '$customerData.class',
+          order_detail: '$order_detail',
+          total: '$total',
+          total_weight: '$total_weight',
+          createAt: '$createAt',
+          queue: '$queue',
+          status: '$status',
+          pay_status: '$pay_status',
+          warehouse: '$warehouse',
+          unit: '$unit',
+          trackorder: '$trackorder'
+
+          // all_details: 1
+        },
+      }
     }
-      console.log("getCustomerName : ", getOrderFinishToday[0].customer_id)
-      console.log("getCustomerName: ", getCustomerName.fullname_th)
+    // Additional stages in the aggregation pipeline if needed
+  ]);
+    
+    console.log(dadadadad);
       // getOrderFinishToday["customer_name"] = getCustomerName.fullname_th
-      console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
-    return res.status(200).send({message: "Get Data Finish Today Successfully",data: getOrderFinishToday})
+      // console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
+
+    return res.status(200).send({message: "Get Data Finish Today Successfully",data: dadadadad})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
