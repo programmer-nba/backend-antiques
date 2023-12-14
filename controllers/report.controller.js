@@ -411,10 +411,12 @@ try{
           _id: '$_id',
           status: '$status',
           fullname_th: '$customerData.fullname_th',
+          address: '$customerData.address',
           fullname_en: '$customerData.fullname_en',
           class: '$customerData.class',
           order_detail: '$order_detail',
           total: '$total',
+          queue: '$queue'
           // all_details: 1
         },
       }
