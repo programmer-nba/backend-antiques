@@ -132,7 +132,9 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
                     }
                   
               })
+              console.log("getSummaryData 2 : ", getSummaryData)
       }
+
       
     function calculateTotalByDay(getSummaryData) {
       const totalsByDay = {};
@@ -361,16 +363,25 @@ module.exports.PurchaseSummary = async (req,res) => {
 
 module.exports.OverviewAntiques = async (req, res) => {
 try{
-  var getCreateAt = new Date("2023-12-07")
+  var getCreateAt = new Date(req.body.createAt)
   console.log("createAt : ", getCreateAt)
   var getOderdata = await Order.findOne({
     createAt: getCreateAt
   })
-  console.log("getOderdata", getOderdata);
-  var datenewnew = new Date("2023-12-14T03:45:56.276+00:00")
+  const startOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T00:00:00.000Z');
+  const endOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T23:59:59.999Z');
+ 
+  var datenewnew = new Date("2023-12-14")
+  
   const getOrderData = await Order.aggregate([
-    
-    
+    {
+      $match: {
+        createAt: {
+          $gte: startOfDay,
+          $lte: endOfDay
+        }
+      }
+    },
     {
       $lookup: {
         from: 'customers',
@@ -380,33 +391,30 @@ try{
             $match: {
               $expr: {
                 $eq: [
-                  { $toString: '$_id' }, // Convert _id to string for comparison
+                  { $toString: '$_id' },
                   '$$orderId'
                 ]
               }
-              
             }
-  
           }
-         
         ],
         as: 'customerData'
       }
     },
     {
-        $unwind: '$customerData'
+      $unwind: '$customerData'
     },
     {
       $project: {
-        message: 'Get Data Success',
-        getCateOrder: {
+        // message: 'Get Data Success',
+        data: {
           _id: '$_id',
           status: '$status',
           fullname_th: '$customerData.fullname_th',
           fullname_en: '$customerData.fullname_en',
           class: '$customerData.class',
-          order_detail: '$customerData.order_detail',
-          total: '$customerData.total',
+          order_detail: '$order_detail',
+          total: '$total',
           // all_details: 1
         },
       }
@@ -417,6 +425,7 @@ try{
   // const getfromcustomer = await Customer.aggregate([
     
   // ])
+
 
   // console.log("getOrderData : ", getOrderData)
   return res.status(200).send({message: "Get Overview Success", data: getOrderData})
