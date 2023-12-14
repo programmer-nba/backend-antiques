@@ -223,6 +223,15 @@ module.exports.GetFinishToday = async (req,res) => {
         },
         status: "FINISH"
       });
+  
+    const getCustomerName = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
+    let addCusNameData = {
+      fullname_th: getCustomerName.fullname_th
+    }
+      console.log("getCustomerName : ", getOrderFinishToday[0].customer_id)
+      console.log("getCustomerName: ", getCustomerName.fullname_th)
+      // getOrderFinishToday["customer_name"] = getCustomerName.fullname_th
+      console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
     return res.status(200).send({message: "Get Data Finish Today Successfully",data: getOrderFinishToday})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
