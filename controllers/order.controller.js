@@ -22,7 +22,7 @@ module.exports.getOrder = async (req,res) => {
 
       // console.log("genOrderId", genOrderId)
       
-      return res.status(200).send({message:" Get Order Success ",data: getAllOrder})
+      return res.status(200).send({message:" Get Order Success ",data: getOrderId})
   }catch(error){
       return res.status(500).send({message: "Internal server error", error: error.message});
   }
