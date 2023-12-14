@@ -298,7 +298,6 @@ module.exports.GetFinishToday = async (req,res) => {
     // Additional stages in the aggregation pipeline if needed
   ]);
     
-    console.log(dadadadad);
       // getOrderFinishToday["customer_name"] = getCustomerName.fullname_th
       // console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
 
