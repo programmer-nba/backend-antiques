@@ -32,6 +32,7 @@ module.exports.CreateDataOrder = async (req,res) => {
   try{
     var items = req.body.items;
     const chk_first_data = await Order.find();
+ 
     // if(items.length == 0){
     //   return res.status(401).send({
     //     message: "กรุณาเพิ่มรายการสินค้า",
@@ -45,7 +46,7 @@ module.exports.CreateDataOrder = async (req,res) => {
     const totalQty = items.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.qty;
     }, 0);
-
+    
     if(chk_first_data.length == 0){
 
       let orderData = {
@@ -77,7 +78,7 @@ module.exports.CreateDataOrder = async (req,res) => {
                                 } 
                     }
               ]});
-
+          
           if(getOrderNow.length != 0){
             var items = req.body.items;
             const updateData = {
@@ -118,7 +119,9 @@ module.exports.CreateDataOrder = async (req,res) => {
 
       var customer = req.body.customers;
       var item = req.body.items;
+
       if(customer.length == 0){
+        
           var customer = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
           var customerId = (customer._id).toString();
       }else{
@@ -131,7 +134,8 @@ module.exports.CreateDataOrder = async (req,res) => {
       if(currentDate.getDate() < 10 ){
         var getDay = "0"+currentDate.getDate()
       }else{
-        var getDay = currentDate.getDay()
+        var getDay = currentDate.getDate()
+        console.log(">>>>>>>>>>>>>>> 10 : GetDay", currentDate.getDate())
       }
       if(currentDate.getMonth() < 10){
         var getMonth = "0"+(currentDate.getMonth())
@@ -141,7 +145,7 @@ module.exports.CreateDataOrder = async (req,res) => {
       var Year = currentDate.getFullYear();
       var getYear = Year.toString().slice(2,4)
 
-    
+      // console.log("Date: ", getYear,"/",getMonth,"/",getDay)
       if(getLastOrder.createAt.getDate() < 10){
         var chkDay = "0"+getLastOrder.createAt.getDate()
       }else{
@@ -154,7 +158,7 @@ module.exports.CreateDataOrder = async (req,res) => {
       }
       var dateInData = getLastOrder.createAt.getFullYear()+"-"+chkMount+"-"+chkDay
       var dateToday = Year+"-"+getMonth+"-"+getDay
-
+      console.log("dateToday : ", dateToday)
       const generateOrderNumber = getLastOrder.trackorder
     
       const convertString = generateOrderNumber.toString()
@@ -194,8 +198,8 @@ module.exports.CreateDataOrder = async (req,res) => {
           trackorder: tracknumber
         }
         console.log("orderData : ", orderData)
-        const createOrder = new Order(orderData);
-        const createOrderData = await createOrder.save();
+        // const createOrder = new Order(orderData);
+        // const createOrderData = await createOrder.save();
         
         return res.status(200).send({message: "Create Data Success", data: orderData})
       }
