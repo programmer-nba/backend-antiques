@@ -297,7 +297,7 @@ module.exports.GetFinishToday = async (req,res) => {
     }
     // Additional stages in the aggregation pipeline if needed
   ]);
-    
+      console.log("data")
       // getOrderFinishToday["customer_name"] = getCustomerName.fullname_th
       // console.log("getOrderFinishToday : ", getOrderFinishToday.push(addCusNameData))
 
@@ -318,6 +318,7 @@ module.exports.GetDataToday = async (req,res) => {
         $lte: endOfDay
       }
     });
+    
     return res.status(200).send({message: "Get today Success",data: getOrderToday })
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
