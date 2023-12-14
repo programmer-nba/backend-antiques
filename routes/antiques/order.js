@@ -16,4 +16,5 @@ router.post("/approveorder", auth, Order.ApproveOrder)
 router.post("/saveafterfinish", auth, Order.saveAfterFinish)
 router.post("/generatereceiptnumber", auth, Order.GenOrderNumber)
 // router.post("/sendtofinish", auth, Order.SendToFinish)
+router.post("/updatestatusafterpay", auth, Order.UpdateStatusAferPay)
 module.exports = router;

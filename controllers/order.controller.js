@@ -548,3 +548,32 @@ module.exports.GenOrderNumber = async (req,res) => {
   }
 }
 
+module.exports.UpdateStatusAferPay = async (req,res) => {
+  try{
+    var getId = req.body._id
+    var getStatus = req.body.status
+    var gentoInt = parseInt(getStatus)
+    if(gentoInt == 1){
+        var status = "FINISH"
+    }else{
+        var status = " "
+    }
+    console.log("status: ", status)
+    console.log()
+
+    const updateData = {
+      $set: {
+        order_detail: req.body.items,
+        status: "APPROVE",
+        customer_id: getCus.id
+      },
+     
+    };
+
+
+
+    // const result = await Order.findByIdAndUpdate(getOrderID._id, updateData, { new: true })
+  }catch(error){
+    return res.status(500).send({message: "Internal server error", error: error.message});
+  }
+}
