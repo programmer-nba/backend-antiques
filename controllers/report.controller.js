@@ -125,7 +125,7 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
       }else{
           var StartDateData = new Date(req.body.StartDate)
                 var EndDateData = new Date(req.body.EndDate)
-                const getSummaryData = await Order.find({
+                var getSummaryData = await Order.find({
                   createAt: {
                       $gte: StartDateData, // Start Date
                       $lte: EndDateData  // End Date
