@@ -198,8 +198,8 @@ module.exports.CreateDataOrder = async (req,res) => {
           trackorder: tracknumber
         }
         console.log("orderData : ", orderData)
-        // const createOrder = new Order(orderData);
-        // const createOrderData = await createOrder.save();
+        const createOrder = new Order(orderData);
+        const createOrderData = await createOrder.save();
         
         return res.status(200).send({message: "Create Data Success", data: orderData})
       }
