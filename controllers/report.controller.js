@@ -119,16 +119,21 @@ module.exports.ReceiptCashBill = async (req, res) => {
 
 module.exports.OrderSummaryReportByDate = async (req,res) => {
     try{
-      console.log("dadaadadad ")
-      var StartDateData = new Date(req.body.StartDate)
-      var EndDateData = new Date(req.body.EndDate)
-      const getSummaryData = await Order.find({
-        createAt: {
-            $gte: StartDateData, // Start Date
-            $lte: EndDateData  // End Date
-          }
-        
-    })
+      
+      if(req.body.StartDate.length == 0 && req.body.EndDate.length == 0){
+          var getSummaryData = await Order.find()
+      }else{
+          var StartDateData = new Date(req.body.StartDate)
+                var EndDateData = new Date(req.body.EndDate)
+                const getSummaryData = await Order.find({
+                  createAt: {
+                      $gte: StartDateData, // Start Date
+                      $lte: EndDateData  // End Date
+                    }
+                  
+              })
+      }
+      
     function calculateTotalByDay(getSummaryData) {
       const totalsByDay = {};
     
