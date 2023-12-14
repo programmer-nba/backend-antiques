@@ -559,20 +559,18 @@ module.exports.UpdateStatusAferPay = async (req,res) => {
         var status = " "
     }
     console.log("status: ", status)
-    console.log()
+    console.log("_id : ", getId)
 
     const updateData = {
       $set: {
-        order_detail: req.body.items,
-        status: "APPROVE",
-        customer_id: getCus.id
+        status: status
       },
-     
     };
 
-
-
-    // const result = await Order.findByIdAndUpdate(getOrderID._id, updateData, { new: true })
+    console.log("updateData : ", updateData)
+    const result = await Order.findByIdAndUpdate(getId, updateData, { new: true })
+    return res.status(200).send({message:" Update Status After Pay Success", data: {updateData, result}})
+    
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
