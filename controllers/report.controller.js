@@ -364,65 +364,112 @@ module.exports.PurchaseSummary = async (req,res) => {
 module.exports.OverviewAntiques = async (req, res) => {
 try{
   var getCreateAt = new Date(req.body.createAt)
-  console.log("createAt : ", getCreateAt)
-  var getOderdata = await Order.findOne({
-    createAt: getCreateAt
-  })
-  const startOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T00:00:00.000Z');
-  const endOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T23:59:59.999Z');
+  console.log("req.body.createAt.length : ", req.body.createAt.length)
+
+
  
-  var datenewnew = new Date("2023-12-14")
   
-  const getOrderData = await Order.aggregate([
-    {
-      $match: {
-        createAt: {
-          $gte: startOfDay,
-          $lte: endOfDay
-        }
-      }
-    },
-    {
-      $lookup: {
-        from: 'customers',
-        let: { orderId: '$customer_id' },
-        pipeline: [
-          {
-            $match: {
-              $expr: {
-                $eq: [
-                  { $toString: '$_id' },
-                  '$$orderId'
-                ]
+  if(req.body.createAt.length == 0){
+
+    var getOrderData = await Order.aggregate([
+    
+      {
+        $lookup: {
+          from: 'customers',
+          let: { orderId: '$customer_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [
+                    { $toString: '$_id' },
+                    '$$orderId'
+                  ]
+                }
               }
             }
+          ],
+          as: 'customerData'
+        }
+      },
+      {
+        $unwind: '$customerData'
+      },
+      {
+        $project: {
+          // message: 'Get Data Success',
+          data: {
+            _id: '$_id',
+            status: '$status',
+            fullname_th: '$customerData.fullname_th',
+            address: '$customerData.address',
+            fullname_en: '$customerData.fullname_en',
+            class: '$customerData.class',
+            order_detail: '$order_detail',
+            total: '$total',
+            queue: '$queue'
+            // all_details: 1
+          },
+        }
+      }
+      // Additional stages in the aggregation pipeline if needed
+    ]);
+  }else{
+    var startOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T00:00:00.000Z');
+    var endOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T23:59:59.999Z');
+    var getOrderData = await Order.aggregate([
+      {
+        $match: {
+          createAt: {
+            $gte: startOfDay,
+            $lte: endOfDay
           }
-        ],
-        as: 'customerData'
+        }
+      },
+      {
+        $lookup: {
+          from: 'customers',
+          let: { orderId: '$customer_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [
+                    { $toString: '$_id' },
+                    '$$orderId'
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'customerData'
+        }
+      },
+      {
+        $unwind: '$customerData'
+      },
+      {
+        $project: {
+          // message: 'Get Data Success',
+          data: {
+            _id: '$_id',
+            status: '$status',
+            fullname_th: '$customerData.fullname_th',
+            address: '$customerData.address',
+            fullname_en: '$customerData.fullname_en',
+            class: '$customerData.class',
+            order_detail: '$order_detail',
+            total: '$total',
+            queue: '$queue'
+            // all_details: 1
+          },
+        }
       }
-    },
-    {
-      $unwind: '$customerData'
-    },
-    {
-      $project: {
-        // message: 'Get Data Success',
-        data: {
-          _id: '$_id',
-          status: '$status',
-          fullname_th: '$customerData.fullname_th',
-          address: '$customerData.address',
-          fullname_en: '$customerData.fullname_en',
-          class: '$customerData.class',
-          order_detail: '$order_detail',
-          total: '$total',
-          queue: '$queue'
-          // all_details: 1
-        },
-      }
-    }
-    // Additional stages in the aggregation pipeline if needed
-  ]);
+      // Additional stages in the aggregation pipeline if needed
+    ]);
+  }
+  
+  
 
   // const getfromcustomer = await Customer.aggregate([
     
