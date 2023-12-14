@@ -482,3 +482,55 @@ try{
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
 }
+
+module.exports.SummaryByNumber = async (req,res) => {
+  try{
+    var getOrderData = await Order.findOne()
+    var getOrder = await Order.aggregate([
+    
+      {
+        $lookup: {
+          from: 'customers',
+          let: { orderId: '$customer_id' },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $eq: [
+                    { $toString: '$_id' },
+                    '$$orderId'
+                  ]
+                }
+              }
+            }
+          ],
+          as: 'customerData'
+        }
+      },
+      {
+        $unwind: '$customerData'
+      },
+      {
+        $project: {
+          // message: 'Get Data Success',
+          data: {
+            _id: '$_id',
+            status: '$status',
+            fullname_th: '$customerData.fullname_th',
+            address: '$customerData.address',
+            fullname_en: '$customerData.fullname_en',
+            class: '$customerData.class',
+            order_detail: '$order_detail',
+            total: '$total',
+            queue: '$queue'
+            // all_details: 1
+          },
+        }
+      }
+      // Additional stages in the aggregation pipeline if needed
+    ]);
+    return res.status(200).send({message: "Get Summary By Number Success", data: getOrder})
+  }catch(error){
+    return res.status(500).send({message: "Internal server error", error: error.message});
+  }
+}
