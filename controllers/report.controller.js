@@ -2,7 +2,7 @@ var jwt = require("jsonwebtoken");
 var Order = require("../models/antiques/antiques_order.model");
 var Customer = require("../models/antiques/antiques_customers.model");
 var Categories_detail = require("../models/antiques/antiques_categories_details.model");
-
+var Categories_vendor = require("../models/antiques/antiques_categories_vendors.model");
 const { google } = require("googleapis");
 const fs = require('fs');
 const multer = require('multer');
@@ -103,7 +103,8 @@ module.exports.ReceiptCashBill = async (req, res) => {
             totalPrice: sumPrice,
             totalWeight: sumWeight,
             createAt: getDatetime,
-            bathText: bahtWords
+            bathText: bahtWords,
+            trackorder: getOrder
         
         }
         console.log("getOrder", getOrder)
@@ -132,7 +133,7 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
                     }
                   
               })
-              console.log("getSummaryData 2 : ", getSummaryData)
+      
       }
 
       
@@ -158,7 +159,7 @@ module.exports.OrderSummaryReportByDate = async (req,res) => {
   
     // Example: Calculate total amount by day
     const totalAmountByDay = calculateTotalByDay(getSummaryData);
-    // console.log('Total Amount by Day:', totalAmountByDay);
+    console.log('Total Amount by Day:', totalAmountByDay);
 
     function calculateOverallSum(totalAmountByDay) {
       let overallSum = 0;
@@ -451,7 +452,7 @@ try{
       {
         $project: {
           // message: 'Get Data Success',
-          data: {
+          
             _id: '$_id',
             status: '$status',
             fullname_th: '$customerData.fullname_th',
@@ -462,7 +463,7 @@ try{
             total: '$total',
             queue: '$queue'
             // all_details: 1
-          },
+          
         }
       }
       // Additional stages in the aggregation pipeline if needed
@@ -487,7 +488,7 @@ module.exports.SummaryByNumber = async (req,res) => {
   try{
     var getOrderData = await Order.findOne()
     var getOrder = await Order.aggregate([
-    
+      
       {
         $lookup: {
           from: 'customers',
@@ -511,9 +512,20 @@ module.exports.SummaryByNumber = async (req,res) => {
         $unwind: '$customerData'
       },
       {
+        $lookup: {
+          from: "categories_vendors",
+          localField: "vendor_id",
+          foreignField: "detail_id",
+          as: "vendorData"
+        }
+      },
+      {
+        $unwind: '$vendorData'
+      },
+      {
         $project: {
           // message: 'Get Data Success',
-          data: {
+          
             _id: '$_id',
             status: '$status',
             fullname_th: '$customerData.fullname_th',
@@ -522,14 +534,49 @@ module.exports.SummaryByNumber = async (req,res) => {
             class: '$customerData.class',
             order_detail: '$order_detail',
             total: '$total',
-            queue: '$queue'
+            queue: '$queue',
+            trackorder: '$trackorder',
+            createAt: '$createAt',
+            vendor_id: '$vendorData.vendor_id'
+            
             // all_details: 1
-          },
+          
         }
       }
       // Additional stages in the aggregation pipeline if needed
     ]);
-    return res.status(200).send({message: "Get Summary By Number Success", data: getOrder})
+    var chkdata = await Categories_vendor.find();
+    var avgVendor = JSON.parse(chkdata[0].vendor_data)
+    console.log("avgVendor", )
+
+    var chk2 = await Order.aggregate([
+      {
+          $project: {
+              parsedData: {
+                  $objectToArray: {
+                      $reduce: {
+                          input: { $objectToArray: "$vendor_data" },
+                          initialValue: [],
+                          in: {
+                              $concatArrays: ["$$value", "$$this.v"]
+                          }
+                      }
+                  }
+              }
+          }
+      },
+      {
+          $unwind: "$parsedData"
+      },
+      {
+          $group: {
+              _id: null,
+              avgVendorData: { $avg: { $toDouble: "$parsedData" } }
+          }
+      }
+  ]);
+
+    return res.status(200).send({message: "Get Summary By Number Success", data: chkdata})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }

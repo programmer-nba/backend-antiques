@@ -486,9 +486,58 @@ module.exports.saveAfterFinish = async (req,res) => {
       var newQueue = getQueueToday.queue+1
     }
       // var genQueueToInt = getQueueToday.queue+1
+      var getLastOrder = await Order.findOne().sort({orderId: -1}).limit(1);
     
+      if(currentDate.getDate() < 10 ){
+        var getDay = "0"+currentDate.getDate()
+      }else{
+        var getDay = currentDate.getDate()
+        console.log(">>>>>>>>>>>>>>> 10 : GetDay", currentDate.getDate())
+      }
+      if(currentDate.getMonth() < 10){
+        var getMonth = "0"+(currentDate.getMonth())
+      }else{
+        var getMonth = currentDate.getMonth()+1
+      }
+      var Year = currentDate.getFullYear();
+      var getYear = Year.toString().slice(2,4)
 
-    console.log(getQueueToday)
+      // console.log("Date: ", getYear,"/",getMonth,"/",getDay)
+      if(getLastOrder.createAt.getDate() < 10){
+        var chkDay = "0"+getLastOrder.createAt.getDate()
+      }else{
+        var chkDay = getLastOrder.createAt.getDate()
+      }
+      if(getLastOrder.createAt.getMonth()< 10){
+        var chkMount = "0"+getLastOrder.createAt.getMonth()+1
+      }else{
+        var chkMount = getLastOrder.createAt.getMonth()+1
+      }
+      var dateInData = getLastOrder.createAt.getFullYear()+"-"+chkMount+"-"+chkDay
+      var dateToday = Year+"-"+getMonth+"-"+getDay
+      console.log("dateToday : ", dateToday)
+      const generateOrderNumber = getLastOrder.trackorder
+    
+      const convertString = generateOrderNumber.toString()
+      const sliceOrderNumber = convertString.slice(8,12)
+   
+        if(dateInData == dateToday){
+          var gentoInt = (parseInt(sliceOrderNumber, 10))+1
+        }else{
+          var gentoInt = 1
+        }
+        console.log("gentoInt : ", gentoInt)
+        if(gentoInt < 10){
+              var genrateNumber = "0"+"0"+"0"+gentoInt.toString()
+        }else if (gentoInt < 100){
+          var genrateNumber = "0"+"0"+gentoInt.toString()
+        }else if (gentoInt < 1000){
+          var genrateNumber = "0"+gentoInt.toString()
+        }else if (gentoInt < 1000){
+          var genrateNumber = gentoInt.toString()
+        }
+      const tracknumber = "OD"+getDay+getMonth+getYear+genrateNumber
+      
 
     
     var customer = req.body.customers;
@@ -506,10 +555,11 @@ module.exports.saveAfterFinish = async (req,res) => {
         status: " ",
         pay_status: 0,
         warehouse: "WH01",
-        unit: "ลัง"
+        unit: "ลัง",
+        trackorder: tracknumber
       }
-      const createOrder = new Order(orderData);
-      const createOrderData = await createOrder.save();
+      // const createOrder = new Order(orderData);
+      // const createOrderData = await createOrder.save();
        
       return res.status(200).send({message:" Create Order Success ",data: {orderData, orderData, createOrder}})
   }catch(error){
