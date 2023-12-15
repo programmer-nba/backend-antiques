@@ -558,8 +558,8 @@ module.exports.saveAfterFinish = async (req,res) => {
         unit: "ลัง",
         trackorder: tracknumber
       }
-      // const createOrder = new Order(orderData);
-      // const createOrderData = await createOrder.save();
+      const createOrder = new Order(orderData);
+      const createOrderData = await createOrder.save();
        
       return res.status(200).send({message:" Create Order Success ",data: {orderData, orderData, createOrder}})
   }catch(error){
