@@ -560,7 +560,7 @@ module.exports.saveAfterFinish = async (req,res) => {
       }
       const createOrder = new Order(orderData);
       const createOrderData = await createOrder.save();
-       console.log(createOrder)
+      
       return res.status(200).send({message:" Create Order Success ",data: {orderData, orderData, createOrder}})
   }catch(error){
       return res.status(500).send({message: "Internal server error", error: error.message});

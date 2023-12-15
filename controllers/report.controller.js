@@ -104,7 +104,7 @@ module.exports.ReceiptCashBill = async (req, res) => {
             totalWeight: sumWeight,
             createAt: getDatetime,
             bathText: bahtWords,
-            trackorder: getOrder
+            trackorder: getOrder.trackorder
         
         }
         console.log("getOrder", getOrder)
