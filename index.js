@@ -29,6 +29,7 @@ var loginAntiques = require('./routes/antiques/login.js')
 var Customer = require('./routes/antiques/customer.js')
 var Order = require('./routes/antiques/order.js')
 var TestCamera = require('./routes/antiques/testcamera.js')
+var Camera = require('./routes/antiques/camera.js')
 
 // Antiques
 app.use("/antiques/", CategoryRouter);
@@ -43,9 +44,11 @@ app.use("/antiques/customer/", Customer)
 // Order data 
 app.use("/antiques/order/", Order)
 // TEST CAMERA
-app.use("/camera/", TestCamera);
+app.use("/camera/test/", TestCamera);
 // Report 
 app.use("/antiques/report/", require('./routes/antiques/report.js'))
+// Camera
+app.use("/camera/", Camera)
 
 //--------------------------------------------------------------------------------------//
 

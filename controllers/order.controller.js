@@ -695,3 +695,33 @@ module.exports.UpdateStatusAferPay = async (req,res) => {
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
 }
+
+module.exports.GetTrackOrder = async (req,res) => {
+  try{
+    var queue = req.body.queue
+    var createAt = req.body.createAt
+    const currentDate = new Date(createAt);
+    const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
+    const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
+    console.log("queue : ", queue)
+    console.log("createAt : ", createAt)
+    var getOrderDataAll = await Order.find({
+      queue: req.body.queue,
+      createAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      }
+    })
+    console.log(getOrderDataAll.trackorder)
+    if(getOrderDataAll.trackorder.length == 0){
+      console.log("THIS IS NULL")
+    }
+    console.log(getOrderDataAll.trackorder)
+    // console.log("getOrderDataAll", getOrderDataAll)
+    var getTrackOrder = await Order.find().select('trackorder')
+    // console.log("getTrackOrder", getTrackOrder)
+    return res.status(200).send({message:"Get Trackorder Success"})
+  }catch(error){
+    return res.status(500).send({message: "Internal server error", error: error.message});
+  }
+}

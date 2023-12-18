@@ -452,7 +452,7 @@ try{
       {
         $project: {
           // message: 'Get Data Success',
-          
+          data: {
             _id: '$_id',
             status: '$status',
             fullname_th: '$customerData.fullname_th',
@@ -463,7 +463,7 @@ try{
             total: '$total',
             queue: '$queue'
             // all_details: 1
-          
+          },
         }
       }
       // Additional stages in the aggregation pipeline if needed
