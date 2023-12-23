@@ -96,7 +96,7 @@ module.exports.CreateDataOrder = async (req,res) => {
 
       const getdataOrderId = await Order.findOne({orderId: getOrderNow[0].orderId})
       // console.log("getdataOrderId : ", getdataOrderId)
-      // const result = await Order.findByIdAndUpdate(getdataOrderId._id, updateData, { new: true })
+      const result = await Order.findByIdAndUpdate(getdataOrderId._id, updateData, { new: true })
 
       return res.status(200).send({message: "Update Data Success", data: result})
     }else{
@@ -205,8 +205,8 @@ module.exports.CreateDataOrder = async (req,res) => {
         }
         console.log("orderData : ", orderData.order_detail)
         console.log("185 : req.body.items ", req.body.items)
-        // const createOrder = new Order(orderData);
-        // const createOrderData = await createOrder.save();
+        const createOrder = new Order(orderData);
+        const createOrderData = await createOrder.save();
         
         return res.status(200).send({message: "Create Data Success", data: orderData})
       }
