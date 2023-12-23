@@ -47,6 +47,9 @@ module.exports.CreateDataOrder = async (req,res) => {
     const totalQty = items.reduce((accumulator, currentValue) => {
       return accumulator + currentValue.qty;
     }, 0);
+
+    console.log("totalPrice : ", totalPrice)
+    console.log("totalQty : ", totalQty)
     
     if(chk_first_data.length == 0){
 
@@ -85,14 +88,15 @@ module.exports.CreateDataOrder = async (req,res) => {
             const updateData = {
               $set: {
                 order_detail: req.body.items,
-                total: totalPrice,
+                total: parseInt(totalPrice),
+                qty: parseInt(totalQty),
                 status: "FINISH"   
               },
             };
 
       const getdataOrderId = await Order.findOne({orderId: getOrderNow[0].orderId})
       // console.log("getdataOrderId : ", getdataOrderId)
-      const result = await Order.findByIdAndUpdate(getdataOrderId._id, updateData, { new: true })
+      // const result = await Order.findByIdAndUpdate(getdataOrderId._id, updateData, { new: true })
 
       return res.status(200).send({message: "Update Data Success", data: result})
     }else{
@@ -182,7 +186,7 @@ module.exports.CreateDataOrder = async (req,res) => {
           var genrateNumber = gentoInt.toString()
         }
       const tracknumber = "OD"+getDay+getMonth+getYear+genrateNumber
-
+        console.log("185 : req.body.items ", req.body.items)
       var getWarehouse = req.body.wherehouse // wherehouse
         let orderData = {
           orderId: genOrderId,
@@ -190,8 +194,8 @@ module.exports.CreateDataOrder = async (req,res) => {
           queue: newQueue,
           customer_class: req.body.customers ? req.body.customers.class : customer.class,
           order_detail: req.body.items,
-          total: totalPrice,
-          total_weight: totalQty,
+          total: parseInt(totalPrice),
+          total_weight: parseInt(totalQty),
           createAt: Date.now(), 
           status: "FINISH",
           pay_status: 0,
@@ -199,9 +203,10 @@ module.exports.CreateDataOrder = async (req,res) => {
           unit: "KG",
           trackorder: tracknumber
         }
-        console.log("orderData : ", orderData)
-        const createOrder = new Order(orderData);
-        const createOrderData = await createOrder.save();
+        console.log("orderData : ", orderData.order_detail)
+        console.log("185 : req.body.items ", req.body.items)
+        // const createOrder = new Order(orderData);
+        // const createOrderData = await createOrder.save();
         
         return res.status(200).send({message: "Create Data Success", data: orderData})
       }
@@ -566,10 +571,10 @@ module.exports.saveAfterFinish = async (req,res) => {
     }
         var itemData =  req.body.items
         const totalPrice = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.total;
+          return accumulator + parseInt(currentValue.total);
         }, 0);
         const totalQty = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.qty;
+          return accumulator + parseInt(currentValue.qty);
         }, 0);
         let orderData = {
           orderId: genOrderId,
@@ -577,8 +582,8 @@ module.exports.saveAfterFinish = async (req,res) => {
           queue: newQueue,
           customer_class: req.body.customers.class,
           order_detail: req.body.items,
-          total: totalPrice,
-          total_weight: totalQty,
+          total: parseInt(totalPrice),
+          total_weight: parseInt(totalQty),
           createAt: Date.now(), 
           status: " ",
           pay_status: 0,
@@ -595,10 +600,10 @@ module.exports.saveAfterFinish = async (req,res) => {
       // console.log("getQueueToday ID : ", getQueueToday[0].trackorder)
         var itemData =  req.body.items
         const totalPrice = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.total;
+          return accumulator + parseInt(currentValue.total);
         }, 0);
         const totalQty = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + currentValue.qty;
+          return accumulator + parseInt(currentValue.qty);
         }, 0);
         console.log("totalPrice : ", totalPrice)
         console.log("totalQty : ", totalQty)
@@ -608,8 +613,8 @@ module.exports.saveAfterFinish = async (req,res) => {
         queue: getQueueToday[0].queue,
         customer_class: getQueueToday[0].class,
         order_detail: req.body.items,
-        total: totalPrice,
-        total_weight: totalQty,
+        total: parseInt(totalPrice),
+        total_weight: parseInt(totalQty),
         createAt: Date.now(), 
         status: " ",
         pay_status: 0,
