@@ -576,7 +576,7 @@ module.exports.SummaryByNumber = async (req,res) => {
       }
   ]);
 
-    return res.status(200).send({message: "Get Summary By Number Success", data: chkdata})
+    return res.status(200).send({message: "Get Summary By Number Success", data: getOrder})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }

@@ -18,4 +18,6 @@ router.post("/generatereceiptnumber", auth, Order.GenOrderNumber)
 // router.post("/sendtofinish", auth, Order.SendToFinish)
 router.post("/updatestatusafterpay", auth, Order.UpdateStatusAferPay)
 router.post("/gettrackorder", auth, Order.GetTrackOrder)
+
+router.get("/amountorderafterselect", auth, Order.AmountOrderAfterSelect)
 module.exports = router;
