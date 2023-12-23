@@ -35,7 +35,9 @@ module.exports.Camera = async (req,res) => {
     const response = await drive.files.create({
       requestBody:{
         name: 'uploadimage2.jpg',
-        mineType: 'image/jpg'
+        mineType: 'image/jpg',
+        role: 'reader',
+        type: 'anyone'
       },
       media:{
         mineType: 'image/jpg',
@@ -114,8 +116,8 @@ module.exports.ChkCamera = async (req, res) =>{
 module.exports.GetImageFromDrive = async (req,res) => {
   try{
     const result = await drive.files.get({
-      fileId: "1Fw-2wv6ZOWFzpYpA-k_fEmLrwALrRVtU",
-      fields: "webViewLink, webContentLink",
+      // fileId: "1Fw-2wv6ZOWFzpYpA-k_fEmLrwALrRVtU",
+      // fields: "webViewLink, webContentLink",
     });
     return res.status(200).send({message: "Get Image Success", data: result})
   }catch(error){
