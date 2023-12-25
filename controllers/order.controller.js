@@ -406,14 +406,14 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
     //   message: "ไม่คิวรายการนี้ในระบบ",
     //   status: false,
     // });
-    console.log("getQueueToday : ", getQueueToday)
+    // console.log("getQueueToday : ", getQueueToday)
     const getOrderData = await Order.find({orderId: getQueueToday.orderId});
     const sumTotalsByDetailId = {};
 
 
 getOrderData[0].order_detail.forEach(item => {
   var { detail_id, qty, total, description,unit } = item;
-  console.log("Item : ", item)
+  // console.log("Item : ", item)
   if (!sumTotalsByDetailId[detail_id]) {
     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
   }
@@ -472,29 +472,32 @@ var data_details = [sumTotalsByDetailId]
 //     })
     
 
-
+  // console.log(data_details)
   getOrderData[0].order_detail = getOrderData[0].order_detail.filter(item => {
-  const idToRemove = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26"];
-  const itemId = Object.keys(item)[0]; // Assuming each item has only one key, and that key is the id
-
-  if (idToRemove.includes(itemId)) {
-    return false; // Exclude items with id "1", "3", and "6"
-  }
-
-  var { detail_id, qty, total, description, unit } = item;
-
-  if (!sumTotalsByDetailId[detail_id]) {
-    sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
-  }
-
-  sumTotalsByDetailId[detail_id].detail_id = detail_id;
-  sumTotalsByDetailId[detail_id].description = description;
-  sumTotalsByDetailId[detail_id].qty += qty;
-  sumTotalsByDetailId[detail_id].total += total;
-  sumTotalsByDetailId[detail_id].unit = unit;
-
-  return true; // Include items that are not removed
-});
+    const idToRemove = ["1", "3", "6"];
+    const itemId = Object.keys(item)[0]; // Assuming each item has only one key, and that key is the id
+  
+    if (idToRemove.includes(itemId)) {
+      return false; // Exclude items with id "1", "3", and "6"
+    }
+  
+    var { detail_id, qty, total, description, unit } = item;
+  
+    if (!sumTotalsByDetailId[detail_id]) {
+      sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+    }
+  
+    sumTotalsByDetailId[detail_id].detail_id = detail_id;
+    sumTotalsByDetailId[detail_id].description = description;
+    sumTotalsByDetailId[detail_id].qty += qty;
+    sumTotalsByDetailId[detail_id].total += total;
+    sumTotalsByDetailId[detail_id].unit = unit;
+  
+    return true; // Include items that are not removed
+  });
+  
+  console.log("Updated order_detail: ", getOrderData[0].order_detail);
+console.log(getOrderData[0].order_detail)
     console.log("getOrderData._id : ", getOrderData[0]._id)
     var getCustomer = await Customer.findOne({
       _id: getOrderData[0].customer_id
@@ -504,7 +507,7 @@ var data_details = [sumTotalsByDetailId]
       _id: (getOrderData[0]._id).toString(),
       orderId: getOrderData[0].orderId,
       customer_id: getOrderData[0].customer_id,
-      order_detail: data_details,
+      order_detail: getOrderData[0].order_detail,
       total: getOrderData[0].total,
       total_weight: getOrderData[0].total_weight,
       createAt: getOrderData[0].createAt,
@@ -520,9 +523,9 @@ var data_details = [sumTotalsByDetailId]
   testdata.push(data_amountorder)
   testdata.push(getCustomer)
 
-  data_amountorder.getCustomer = getCustomer;
-    console.log("getCustomer", getCustomer)
-    return res.status(200).send({message: "Get Last Queue Today",data: testdata }) 
+  // data_amountorder.getCustomer = getCustomer;
+    // console.log("getCustomer", getCustomer)
+    return res.status(200).send({message: "Get Last Queue Today",data: data_amountorder }) 
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
