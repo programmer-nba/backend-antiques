@@ -19,11 +19,11 @@ module.exports.getOrder = async (req,res) => {
       const genOrderId = (getOrderId.orderId)+1
       // var genOrderID = (parseInt(chkOrderID[0].orderId))+1
       // var gentoString = genOrderID.toString();
-
+    const getdata = await Order.findOne({orderId: 150});
 
       // console.log("genOrderId", genOrderId)
       
-      return res.status(200).send({message:" Get Order Success ",data: getOrderId})
+      return res.status(200).send({message:" Get Order Success ",data: getdata})
   }catch(error){
       return res.status(500).send({message: "Internal server error", error: error.message});
   }
@@ -42,10 +42,10 @@ module.exports.CreateDataOrder = async (req,res) => {
     // }
     
     const totalPrice = items.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.total;
+      return accumulator + parseInt(currentValue.total);
     }, 0);
     const totalQty = items.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue.qty;
+      return accumulator + parseInt(currentValue.qty);
     }, 0);
 
     console.log("totalPrice : ", totalPrice)
@@ -228,7 +228,7 @@ module.exports.GetFinishToday = async (req,res) => {
         },
         status: "FINISH"
       });
-  
+
     const getCustomerName = await Customer.findOne({_id: "6569a9f652f2871ab9e9cead"});
     let newData = {
       "customer_name": getCustomerName.fullname_th
