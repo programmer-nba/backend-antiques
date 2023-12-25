@@ -411,79 +411,108 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
     const sumTotalsByDetailId = {};
 
 
-getOrderData[0].order_detail.forEach(item => {
-  const { detail_id, qty, total, description } = item;
+// getOrderData[0].order_detail.forEach(item => {
+//   var { detail_id, qty, total, description,unit } = item;
+//   console.log("Item : ", item)
+//   if (!sumTotalsByDetailId[detail_id]) {
+//     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+//   }
+//   sumTotalsByDetailId[detail_id].detail_id = detail_id;
+//   sumTotalsByDetailId[detail_id].description = description;
+//   sumTotalsByDetailId[detail_id].qty += qty;
+//   sumTotalsByDetailId[detail_id].total += total;
+//   sumTotalsByDetailId[detail_id].unit = unit;
+// });
+// var data_details = [sumTotalsByDetailId]
+// // console.log("test", test)
+// const chkdata = {}
+// getOrderData[0].order_detail.forEach(item => {
+//   const { detail_id, description,qty,total } = item;
+//   if (!chkdata[detail_id]) {
+//     chkdata[detail_id] = { qty: 0, total: 0 };
+//     chkdata[detail_id].qty += qty;
+//     chkdata[detail_id].total += total;
+//   }
+//   chkdata[detail_id].description = description
+// }
+// )
+// getOrderData[0].order_detail.forEach(data =>{
+//   // console.log("Description : ", data.description);
+//   // console.log("Detail_id : ", data.detail_id);
+//   // const getDetail = await category_detail.findOne()
+// })
+// // console.log("chkdata", chkdata)
+// // console.log("sumTotalsByDetailId : ",sumTotalsByDetailId)
+// const detailId = 6
+//     const findOrder = await Order.findOne({trackorder: "OD2012230006"})
+//     // console.log(findOrder)
+
+//     // console.log(findOrder.order_detail)
+//     const detailData = findOrder.order_detail
+//     var newdata = {}
+//     for (const detailDatas of detailData){
+//       // console.log("detailsDatas : ",detailDatas.detail_id)
+//       // console.log(testdatas.detail_id)
+//       const newfindOrder = await category_detail.findOne({detail_id: detailDatas.detail_id}).select("detail_name_th")
+//       var i = 0
+//       // console.log("ID : ", detailDatas.detail_id)
+//       if(detailDatas.detail_id){
+
+//       }
+//       // newdata += testdatas.total
+//       // console.log(newdata," : ", i++)
+//       // console.log(testdatas.total)
+//     }
+//     findOrder.order_detail.forEach(data2 => {
+//     //   console.log("data2", data2.detail_id)
+//     // console.log("newdata : ", newdata)
+//     })
+//     detailData.forEach(data => {
+//       // console.log("Data : ", data)
+//     })
+    
+//     let data_amountorder = {
+//         _id: (getOrderData[0]._id).toString(),
+//         orderId: getOrderData[0].orderId,
+//         customer_id: getOrderData[0].customer_id,
+//         order_detail: data_details,
+//         total: getOrderData[0].total,
+//         total_weight: getOrderData[0].total_weight,
+//         createAt: getOrderData[0].createAt,
+//         queue: getOrderData[0].queue,
+//         status: getOrderData[0].status,
+//         pay_status: getOrderData[0].pay_status,
+//         warehouse: getOrderData[0].warehouse,
+//         unit: getOrderData[0].unit,
+//         trackorder: getOrderData[0].trackorder
+       
+//     }
+
+  getOrderData[0].order_detail = getOrderData[0].order_detail.filter(item => {
+  const idToRemove = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26"];
+  const itemId = Object.keys(item)[0]; // Assuming each item has only one key, and that key is the id
+
+  if (idToRemove.includes(itemId)) {
+    return false; // Exclude items with id "1", "3", and "6"
+  }
+
+  var { detail_id, qty, total, description, unit } = item;
+
   if (!sumTotalsByDetailId[detail_id]) {
     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
   }
+
+  sumTotalsByDetailId[detail_id].detail_id = detail_id;
   sumTotalsByDetailId[detail_id].description = description;
   sumTotalsByDetailId[detail_id].qty += qty;
   sumTotalsByDetailId[detail_id].total += total;
+  sumTotalsByDetailId[detail_id].unit = unit;
+
+  return true; // Include items that are not removed
 });
-console.log("sumTotalsByDetailId : ", sumTotalsByDetailId)
-const chkdata = {}
-getOrderData[0].order_detail.forEach(item => {
-  const { detail_id, description,qty,total } = item;
-  if (!chkdata[detail_id]) {
-    chkdata[detail_id] = { qty: 0, total: 0 };
-    chkdata[detail_id].qty += qty;
-    chkdata[detail_id].total += total;
-  }
-  chkdata[detail_id].description = description
-}
-)
-getOrderData[0].order_detail.forEach(data =>{
-  // console.log("Description : ", data.description);
-  // console.log("Detail_id : ", data.detail_id);
-  // const getDetail = await category_detail.findOne()
-})
-// console.log("chkdata", chkdata)
-// console.log("sumTotalsByDetailId : ",sumTotalsByDetailId)
-const detailId = 6
-    const findOrder = await Order.findOne({trackorder: "OD2012230006"})
-    // console.log(findOrder)
 
-    // console.log(findOrder.order_detail)
-    const detailData = findOrder.order_detail
-    var newdata = {}
-    for (const detailDatas of detailData){
-      // console.log("detailsDatas : ",detailDatas.detail_id)
-      // console.log(testdatas.detail_id)
-      const newfindOrder = await category_detail.findOne({detail_id: detailDatas.detail_id}).select("detail_name_th")
-      var i = 0
-      // console.log("ID : ", detailDatas.detail_id)
-      if(detailDatas.detail_id){
-
-      }
-      // newdata += testdatas.total
-      // console.log(newdata," : ", i++)
-      // console.log(testdatas.total)
-    }
-    findOrder.order_detail.forEach(data2 => {
-    //   console.log("data2", data2.detail_id)
-    // console.log("newdata : ", newdata)
-    })
-    detailData.forEach(data => {
-      // console.log("Data : ", data)
-    })
-    let data_amountorder = {
-        _id: (getOrderData[0]._id).toString(),
-        orderId: getOrderData[0].orderId,
-        customer_id: getOrderData[0].customer_id,
-        order_detail: sumTotalsByDetailId,
-        total: getOrderData[0].total,
-        total_weight: getOrderData[0].total_weight,
-        createAt: getOrderData[0].createAt,
-        queue: getOrderData[0].queue,
-        status: getOrderData[0].status,
-        pay_status: getOrderData[0].pay_status,
-        warehouse: getOrderData[0].warehouse,
-        unit: getOrderData[0].unit,
-        trackorder: getOrderData[0].trackorder
-       
-    }
-    console.log("data_amountorder : ", data_amountorder)
-    return res.status(200).send({message: "Get Last Queue Today",data: data_amountorder }) 
+    console.log("data_amountorder : ", getOrderData)
+    return res.status(200).send({message: "Get Last Queue Today",data: getOrderData }) 
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
