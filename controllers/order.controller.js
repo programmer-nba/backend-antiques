@@ -525,7 +525,7 @@ console.log(getOrderData[0].order_detail)
 
   // data_amountorder.getCustomer = getCustomer;
     // console.log("getCustomer", getCustomer)
-    return res.status(200).send({message: "Get Last Queue Today",data: data_amountorder }) 
+    return res.status(200).send({message: "Get Last Queue Today",data: testdata }) 
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
