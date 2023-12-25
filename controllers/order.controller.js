@@ -410,21 +410,56 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
     const getOrderData = await Order.find({orderId: getQueueToday.orderId});
     const sumTotalsByDetailId = {};
 
+console.log("getOrderData : ", getOrderData)
+let new_order = [];
 
-getOrderData[0].order_detail.forEach(item => {
-  var { detail_id, qty, total, description,unit } = item;
-  // console.log("Item : ", item)
-  if (!sumTotalsByDetailId[detail_id]) {
-    sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+getOrderData[0].order_detail.forEach((item) => {
+  const existingItem = new_order.find((newOrderItem) => newOrderItem.detail_id === item.detail_id);
+
+  if (existingItem) {
+    // Update quantities and totals for existing items
+    existingItem.qty += item.qty;
+    existingItem.total += item.total;
+  } else {
+    // Add new items to new_order
+    new_order.push({ ...item });
   }
-  sumTotalsByDetailId[detail_id].detail_id = detail_id;
-  sumTotalsByDetailId[detail_id].description = description;
-  sumTotalsByDetailId[detail_id].qty += qty;
-  sumTotalsByDetailId[detail_id].total += total;
-  sumTotalsByDetailId[detail_id].unit = unit;
 });
-var data_details = [sumTotalsByDetailId]
-// // console.log("test", test)
+
+console.log("new_order", new_order);
+
+// getOrderData[0].order_detail.forEach(item => {
+//   var { detail_id, qty, total, description,unit } = item;
+//   // console.log("Item : ", item)
+//   if (!sumTotalsByDetailId[detail_id]) {
+//     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+//   }
+//   sumTotalsByDetailId[detail_id].detail_id = detail_id;
+//   sumTotalsByDetailId[detail_id].description = description;
+//   sumTotalsByDetailId[detail_id].qty += qty;
+//   sumTotalsByDetailId[detail_id].total += total;
+//   sumTotalsByDetailId[detail_id].unit = unit;
+// });
+// // const idToRemove = ["1", "3", "6"];
+// // const itemId = Object.keys(item)[0]; // Assuming each item has only one key, and that key is the id
+
+// // if (idToRemove.includes(itemId)) {
+// //   return false; // Exclude items with id "1", "3", and "6"
+// // }
+// var data_details = [sumTotalsByDetailId]
+// const keysToRemove = ['1', '3', '6'];
+
+// // Remove properties with keys '1', '3', and '6' from each object in the array
+// const updatedDataDetails = data_details.map(item => {
+//   keysToRemove.forEach(key => {
+//     if (item.hasOwnProperty(key)) {
+//       delete item[key];
+//     }
+//   });
+//   return item;
+// });
+// console.log("updatedDataDetails", updatedDataDetails)
+// console.log("test", test)
 // const chkdata = {}
 // getOrderData[0].order_detail.forEach(item => {
 //   const { detail_id, description,qty,total } = item;
@@ -496,8 +531,8 @@ var data_details = [sumTotalsByDetailId]
     return true; // Include items that are not removed
   });
   
-  console.log("Updated order_detail: ", getOrderData[0].order_detail);
-console.log(getOrderData[0].order_detail)
+//   console.log("Updated order_detail: ", sumTotalsByDetailId);
+// console.log(getOrderData[0].order_detail)
     console.log("getOrderData._id : ", getOrderData[0]._id)
     var getCustomer = await Customer.findOne({
       _id: getOrderData[0].customer_id
@@ -507,7 +542,7 @@ console.log(getOrderData[0].order_detail)
       _id: (getOrderData[0]._id).toString(),
       orderId: getOrderData[0].orderId,
       customer_id: getOrderData[0].customer_id,
-      order_detail: getOrderData[0].order_detail,
+      order_detail: new_order,
       total: getOrderData[0].total,
       total_weight: getOrderData[0].total_weight,
       createAt: getOrderData[0].createAt,
