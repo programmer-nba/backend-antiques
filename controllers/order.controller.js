@@ -387,6 +387,7 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
   try{
     const getDatetime = req.body.createAt;
     const currentDate = new Date(getDatetime);
+    const queue = req.body.queue
     
     const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
     const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
@@ -397,25 +398,92 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
         $lte: endOfDay
       }
     })
-    const newQueue = parseInt(getQueueToday.queue)
-    if (!getQueueToday)
-    // มีการใช้ชื่อนี้ไปแล้ว
-    return res.status(401).send({
-      message: "ไม่คิวรายการนี้ในระบบ",
-      status: false,
-    });
-    console.log("getQueueTodayb : ", getQueueToday.customer_id)
-    // console.log("QQQQ : ", getQueueToday['_id'])
-    // console.log("ID : ", )
-    const customer = await Customer.findOne({_id: getQueueToday.customer_id})
-    // new Array(getQueueToday)
-    
-    let dataOrder = [
-      getQueueToday,
-      customer
-    ]
-    // console.log(dataOrder)
-    return res.status(200).send({message: "Get Last Queue Today",data: dataOrder }) 
+
+    // const newQueue = parseInt(getQueueToday.queue)
+    // if (!getQueueToday)
+    // // มีการใช้ชื่อนี้ไปแล้ว
+    // return res.status(401).send({
+    //   message: "ไม่คิวรายการนี้ในระบบ",
+    //   status: false,
+    // });
+    console.log("getQueueToday : ", getQueueToday)
+    const getOrderData = await Order.find({orderId: getQueueToday.orderId});
+    const sumTotalsByDetailId = {};
+
+
+getOrderData[0].order_detail.forEach(item => {
+  const { detail_id, qty, total, description } = item;
+  if (!sumTotalsByDetailId[detail_id]) {
+    sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+  }
+  sumTotalsByDetailId[detail_id].description = description;
+  sumTotalsByDetailId[detail_id].qty += qty;
+  sumTotalsByDetailId[detail_id].total += total;
+});
+console.log("sumTotalsByDetailId : ", sumTotalsByDetailId)
+const chkdata = {}
+getOrderData[0].order_detail.forEach(item => {
+  const { detail_id, description,qty,total } = item;
+  if (!chkdata[detail_id]) {
+    chkdata[detail_id] = { qty: 0, total: 0 };
+    chkdata[detail_id].qty += qty;
+    chkdata[detail_id].total += total;
+  }
+  chkdata[detail_id].description = description
+}
+)
+getOrderData[0].order_detail.forEach(data =>{
+  // console.log("Description : ", data.description);
+  // console.log("Detail_id : ", data.detail_id);
+  // const getDetail = await category_detail.findOne()
+})
+// console.log("chkdata", chkdata)
+// console.log("sumTotalsByDetailId : ",sumTotalsByDetailId)
+const detailId = 6
+    const findOrder = await Order.findOne({trackorder: "OD2012230006"})
+    // console.log(findOrder)
+
+    // console.log(findOrder.order_detail)
+    const detailData = findOrder.order_detail
+    var newdata = {}
+    for (const detailDatas of detailData){
+      // console.log("detailsDatas : ",detailDatas.detail_id)
+      // console.log(testdatas.detail_id)
+      const newfindOrder = await category_detail.findOne({detail_id: detailDatas.detail_id}).select("detail_name_th")
+      var i = 0
+      // console.log("ID : ", detailDatas.detail_id)
+      if(detailDatas.detail_id){
+
+      }
+      // newdata += testdatas.total
+      // console.log(newdata," : ", i++)
+      // console.log(testdatas.total)
+    }
+    findOrder.order_detail.forEach(data2 => {
+    //   console.log("data2", data2.detail_id)
+    // console.log("newdata : ", newdata)
+    })
+    detailData.forEach(data => {
+      // console.log("Data : ", data)
+    })
+    let data_amountorder = {
+        _id: (getOrderData[0]._id).toString(),
+        orderId: getOrderData[0].orderId,
+        customer_id: getOrderData[0].customer_id,
+        order_detail: sumTotalsByDetailId,
+        total: getOrderData[0].total,
+        total_weight: getOrderData[0].total_weight,
+        createAt: getOrderData[0].createAt,
+        queue: getOrderData[0].queue,
+        status: getOrderData[0].status,
+        pay_status: getOrderData[0].pay_status,
+        warehouse: getOrderData[0].warehouse,
+        unit: getOrderData[0].unit,
+        trackorder: getOrderData[0].trackorder
+       
+    }
+    console.log("data_amountorder : ", data_amountorder)
+    return res.status(200).send({message: "Get Last Queue Today",data: data_amountorder }) 
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
@@ -798,38 +866,37 @@ module.exports.GetTrackOrder = async (req,res) => {
 
 module.exports.AmountOrderAfterSelect = async (req,res) => {
   try{
-    const getOrderData = await Order.find({orderId: 97});
+    const getOrderData = await Order.find({orderId: 61});
     const sumTotalsByDetailId = {};
-    console.log("getOrderData : ", getOrderData[0].order_detail)
+    console.log("getOrderData : ", getOrderData)
 
 getOrderData[0].order_detail.forEach(item => {
   const { detail_id, qty, total, description } = item;
   if (!sumTotalsByDetailId[detail_id]) {
     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
   }
-  qty = parseInt(qty)
   sumTotalsByDetailId[detail_id].description = description;
   sumTotalsByDetailId[detail_id].qty += qty;
   sumTotalsByDetailId[detail_id].total += total;
 });
-
-// const chkdata = {}
-// getOrderData[0].order_detail.forEach(item => {
-//   const { detail_id, description,qty,total } = item;
-//   if (!chkdata[detail_id]) {
-//     chkdata[detail_id] = { qty: 0, total: 0 };
-//     chkdata[detail_id].qty += qty;
-//     chkdata[detail_id].total += total;
-//   }
-//   chkdata[detail_id].description = description
-// }
-// )
-// getOrderData[0].order_detail.forEach(data =>{
+console.log("sumTotalsByDetailId : ", sumTotalsByDetailId)
+const chkdata = {}
+getOrderData[0].order_detail.forEach(item => {
+  const { detail_id, description,qty,total } = item;
+  if (!chkdata[detail_id]) {
+    chkdata[detail_id] = { qty: 0, total: 0 };
+    chkdata[detail_id].qty += qty;
+    chkdata[detail_id].total += total;
+  }
+  chkdata[detail_id].description = description
+}
+)
+getOrderData[0].order_detail.forEach(data =>{
   // console.log("Description : ", data.description);
   // console.log("Detail_id : ", data.detail_id);
   // const getDetail = await category_detail.findOne()
-// })
-// console.log("chkdata", chkdata)
+})
+console.log("chkdata", chkdata)
 console.log("sumTotalsByDetailId : ",sumTotalsByDetailId)
 const detailId = 6
     const findOrder = await Order.findOne({trackorder: "OD2012230006"})
@@ -839,7 +906,7 @@ const detailId = 6
     const detailData = findOrder.order_detail
     var newdata = {}
     for (const detailDatas of detailData){
-      console.log("detailsDatas : ",detailDatas.detail_id)
+      // console.log("detailsDatas : ",detailDatas.detail_id)
       // console.log(testdatas.detail_id)
       const newfindOrder = await category_detail.findOne({detail_id: detailDatas.detail_id}).select("detail_name_th")
       var i = 0
@@ -851,15 +918,32 @@ const detailId = 6
       // console.log(newdata," : ", i++)
       // console.log(testdatas.total)
     }
-    // findOrder.order_detail.forEach(data2 => {
+    findOrder.order_detail.forEach(data2 => {
     //   console.log("data2", data2.detail_id)
     // console.log("newdata : ", newdata)
-    // })
-    // detailData.forEach(data => {
-    //   console.log("Data : ", data)
-    // })
+    })
+    detailData.forEach(data => {
+      // console.log("Data : ", data)
+    })
+    let data_amountorder = {
+        _id: (getOrderData[0]._id).toString(),
+        orderId: getOrderData[0].orderId,
+        customer_id: getOrderData[0].customer_id,
+        order_detail: sumTotalsByDetailId,
+        total: getOrderData[0].total,
+        total_weight: getOrderData[0].total_weight,
+        createAt: getOrderData[0].createAt,
+        queue: getOrderData[0].queue,
+        status: getOrderData[0].status,
+        pay_status: getOrderData[0].pay_status,
+        warehouse: getOrderData[0].warehouse,
+        unit: getOrderData[0].unit,
+        trackorder: getOrderData[0].trackorder
+       
+    }
+    console.log("data_amountorder : ", data_amountorder)
     // console.log("findOrder", findOrder)
-    return res.status(200).send({message:"Get Trackorder Success",data: sumTotalsByDetailId})
+    return res.status(200).send({message:"Get Trackorder Success",data: data_amountorder})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
