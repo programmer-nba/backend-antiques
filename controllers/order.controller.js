@@ -387,7 +387,7 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
   try{
     const getDatetime = req.body.createAt;
     const currentDate = new Date(getDatetime);
-    const queue = req.body.queue
+    // const queue = req.body.queue
     
     const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
     const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
@@ -411,19 +411,19 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
     const sumTotalsByDetailId = {};
 
 
-// getOrderData[0].order_detail.forEach(item => {
-//   var { detail_id, qty, total, description,unit } = item;
-//   console.log("Item : ", item)
-//   if (!sumTotalsByDetailId[detail_id]) {
-//     sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
-//   }
-//   sumTotalsByDetailId[detail_id].detail_id = detail_id;
-//   sumTotalsByDetailId[detail_id].description = description;
-//   sumTotalsByDetailId[detail_id].qty += qty;
-//   sumTotalsByDetailId[detail_id].total += total;
-//   sumTotalsByDetailId[detail_id].unit = unit;
-// });
-// var data_details = [sumTotalsByDetailId]
+getOrderData[0].order_detail.forEach(item => {
+  var { detail_id, qty, total, description,unit } = item;
+  console.log("Item : ", item)
+  if (!sumTotalsByDetailId[detail_id]) {
+    sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
+  }
+  sumTotalsByDetailId[detail_id].detail_id = detail_id;
+  sumTotalsByDetailId[detail_id].description = description;
+  sumTotalsByDetailId[detail_id].qty += qty;
+  sumTotalsByDetailId[detail_id].total += total;
+  sumTotalsByDetailId[detail_id].unit = unit;
+});
+var data_details = [sumTotalsByDetailId]
 // // console.log("test", test)
 // const chkdata = {}
 // getOrderData[0].order_detail.forEach(item => {
@@ -471,22 +471,7 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
 //       // console.log("Data : ", data)
 //     })
     
-//     let data_amountorder = {
-//         _id: (getOrderData[0]._id).toString(),
-//         orderId: getOrderData[0].orderId,
-//         customer_id: getOrderData[0].customer_id,
-//         order_detail: data_details,
-//         total: getOrderData[0].total,
-//         total_weight: getOrderData[0].total_weight,
-//         createAt: getOrderData[0].createAt,
-//         queue: getOrderData[0].queue,
-//         status: getOrderData[0].status,
-//         pay_status: getOrderData[0].pay_status,
-//         warehouse: getOrderData[0].warehouse,
-//         unit: getOrderData[0].unit,
-//         trackorder: getOrderData[0].trackorder
-       
-//     }
+
 
   getOrderData[0].order_detail = getOrderData[0].order_detail.filter(item => {
   const idToRemove = ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24","25","26"];
@@ -510,9 +495,34 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
 
   return true; // Include items that are not removed
 });
+    console.log("getOrderData._id : ", getOrderData[0]._id)
+    var getCustomer = await Customer.findOne({
+      _id: getOrderData[0].customer_id
+    });
 
-    console.log("data_amountorder : ", getOrderData)
-    return res.status(200).send({message: "Get Last Queue Today",data: getOrderData }) 
+    let data_amountorder = {
+      _id: (getOrderData[0]._id).toString(),
+      orderId: getOrderData[0].orderId,
+      customer_id: getOrderData[0].customer_id,
+      order_detail: data_details,
+      total: getOrderData[0].total,
+      total_weight: getOrderData[0].total_weight,
+      createAt: getOrderData[0].createAt,
+      queue: getOrderData[0].queue,
+      status: getOrderData[0].status,
+      pay_status: getOrderData[0].pay_status,
+      warehouse: getOrderData[0].warehouse,
+      unit: getOrderData[0].unit,
+      trackorder: getOrderData[0].trackorder
+     
+  }
+  var testdata = []
+  testdata.push(data_amountorder)
+  testdata.push(getCustomer)
+
+  data_amountorder.getCustomer = getCustomer;
+    console.log("getCustomer", getCustomer)
+    return res.status(200).send({message: "Get Last Queue Today",data: testdata }) 
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
