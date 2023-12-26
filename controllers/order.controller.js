@@ -1031,3 +1031,51 @@ const detailId = 6
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
 }
+
+module.exports.ViewDetailOrder = async (req,res) => {
+  try{
+    var queue = req.body.queue
+    var createAt = req.body.createAt
+    var detail_id = req.body.detail_id
+    const currentDate = new Date(createAt);
+    const startOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T00:00:00.000Z');
+    const endOfDay = new Date(currentDate.toISOString().split('T')[0] + 'T23:59:59.999Z');
+    console.log("queue : ", queue)
+    console.log("createAt : ", createAt)
+    console.log("Details ID : ", detail_id)
+    var getOrderDataAll = await Order.findOne({
+      queue: req.body.queue,
+      createAt: {
+        $gte: startOfDay,
+        $lte: endOfDay
+      },
+    })
+    var getDataDetail = await Order.aggregate([
+      {
+        $match: {
+          queue: queue,
+          createAt: {
+            $gte: startOfDay,
+            $lte: endOfDay
+          }
+        }
+      },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category_id",
+          foreignField: "category_id",
+          as: "all_cate"
+        }
+      },
+      {
+        $unwind: "$all_cate"
+      }
+    
+    ]);
+    console.log(getDataDetail)
+    return res.status(200).send({message: "Veiw Details Data Succes", data: getDataDetail})
+  }catch(error){
+    return res.status(500).send({message: "Internal server error", error: error.message});
+  }
+}
