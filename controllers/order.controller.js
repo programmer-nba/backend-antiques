@@ -42,10 +42,10 @@ module.exports.CreateDataOrder = async (req,res) => {
     // }
     
     const totalPrice = items.reduce((accumulator, currentValue) => {
-      return accumulator + parseInt(currentValue.total);
+      return parseInt(accumulator) + parseInt(currentValue.total);
     }, 0);
     const totalQty = items.reduce((accumulator, currentValue) => {
-      return accumulator + parseInt(currentValue.qty);
+      return parseInt(accumulator) + parseInt(currentValue.qty);
     }, 0);
 
     console.log("totalPrice : ", totalPrice)
@@ -716,10 +716,10 @@ module.exports.saveAfterFinish = async (req,res) => {
     }
         var itemData =  req.body.items
         const totalPrice = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + parseInt(currentValue.total);
+          return parseInt(accumulator) + parseInt(currentValue.total);
         }, 0);
         const totalQty = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + parseInt(currentValue.qty);
+          return parseInt(accumulator) + parseInt(currentValue.qty);
         }, 0);
         let orderData = {
           orderId: genOrderId,
@@ -745,10 +745,10 @@ module.exports.saveAfterFinish = async (req,res) => {
       // console.log("getQueueToday ID : ", getQueueToday[0].trackorder)
         var itemData =  req.body.items
         const totalPrice = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + parseInt(currentValue.total);
+          return parseInt(accumulator) + parseInt(currentValue.total);
         }, 0);
         const totalQty = itemData.reduce((accumulator, currentValue) => {
-          return accumulator + parseInt(currentValue.qty);
+          return parseInt(accumulator) + parseInt(currentValue.qty);
         }, 0);
         console.log("totalPrice : ", totalPrice)
         console.log("totalQty : ", totalQty)
