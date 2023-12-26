@@ -524,8 +524,8 @@ console.log("new_order", new_order);
   
     sumTotalsByDetailId[detail_id].detail_id = detail_id;
     sumTotalsByDetailId[detail_id].description = description;
-    sumTotalsByDetailId[detail_id].qty += qty;
-    sumTotalsByDetailId[detail_id].total += total;
+    parseInt(sumTotalsByDetailId[detail_id].qty += parseInt(qty));
+    parseInt(sumTotalsByDetailId[detail_id].total += parseInt(total));
     sumTotalsByDetailId[detail_id].unit = unit;
   
     return true; // Include items that are not removed
