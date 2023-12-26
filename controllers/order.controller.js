@@ -1043,14 +1043,7 @@ module.exports.ViewDetailOrder = async (req,res) => {
     console.log("queue : ", queue)
     console.log("createAt : ", createAt)
     console.log("Details ID : ", detail_id)
-    var getOrderDataAll = await Order.findOne({
-      queue: req.body.queue,
-      createAt: {
-        $gte: startOfDay,
-        $lte: endOfDay
-      },
-    })
-    var getDataDetail = await Order.aggregate([
+    var getOrderDataAll = await Order.aggregate([
       {
         $match: {
           queue: queue,
@@ -1061,20 +1054,46 @@ module.exports.ViewDetailOrder = async (req,res) => {
         }
       },
       {
+        $unwind: "$order_detail"
+      },
+      {
+        $match: {
+          "order_detail.detail_id": detail_id
+        }
+      },
+      {
+        $group: {
+          _id: "$_id",
+          orderId: { $first: "$orderId" },
+          customer_id: { $first: "$customer_id" },
+          customer_class: { $first: "$customer_class" },
+          order_detail: { $push: "$order_detail" },
+          total: { $first: "$total" },
+          total_weight: { $first: "$total_weight" },
+          createAt: { $first: "$createAt" },
+          queue: { $first: "$queue" },
+          status: { $first: "$status" },
+          pay_status: { $first: "$pay_status" },
+          warehouse: { $first: "$warehouse" },
+          unit: { $first: "$unit" },
+          trackorder: { $first: "$trackorder" },
+          __v: { $first: "$__v" },
+          all_cate: { $first: "$all_cate" }
+        }
+      },
+      {
         $lookup: {
           from: "categories",
           localField: "category_id",
           foreignField: "category_id",
           as: "all_cate"
         }
-      },
-      {
-        $unwind: "$all_cate"
       }
-    
     ]);
-    console.log(getDataDetail)
-    return res.status(200).send({message: "Veiw Details Data Succes", data: getDataDetail})
+
+    
+    console.log(getOrderDataAll)
+    return res.status(200).send({message: "Veiw Details Data Succes", data: getOrderDataAll})
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
