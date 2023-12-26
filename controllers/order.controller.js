@@ -408,25 +408,14 @@ module.exports.getOrderByDateAndQueue = async (req,res) => {
     // });
     // console.log("getQueueToday : ", getQueueToday)
     const getOrderData = await Order.find({orderId: getQueueToday.orderId});
-    const sumTotalsByDetailId = {};
+    const sumTotalsByDetailId = [];
 
 console.log("getOrderData : ", getOrderData)
-let new_order = [];
+// let new_order = [];
 
-getOrderData[0].order_detail.forEach((item) => {
-  const existingItem = new_order.find((newOrderItem) => newOrderItem.detail_id === item.detail_id);
 
-  if (existingItem) {
-    // Update quantities and totals for existing items
-    existingItem.qty += item.qty;
-    existingItem.total += item.total;
-  } else {
-    // Add new items to new_order
-    new_order.push({ ...item });
-  }
-});
 
-console.log("new_order", new_order);
+// console.log("new_order", new_order);
 
 // getOrderData[0].order_detail.forEach(item => {
 //   var { detail_id, qty, total, description,unit } = item;
@@ -509,7 +498,7 @@ console.log("new_order", new_order);
 
   // console.log(data_details)
   getOrderData[0].order_detail = getOrderData[0].order_detail.filter(item => {
-    const idToRemove = ["1", "3", "6"];
+    const idToRemove = ["1","2","3","4","5", "6","7","8","9","10","11","12","13", "14","15","16","17","18","19","20", "21","22","23"];
     const itemId = Object.keys(item)[0]; // Assuming each item has only one key, and that key is the id
   
     if (idToRemove.includes(itemId)) {
@@ -519,6 +508,7 @@ console.log("new_order", new_order);
     var { detail_id, qty, total, description, unit } = item;
   
     if (!sumTotalsByDetailId[detail_id]) {
+
       sumTotalsByDetailId[detail_id] = { qty: 0, total: 0 };
     }
   
@@ -527,17 +517,33 @@ console.log("new_order", new_order);
     parseInt(sumTotalsByDetailId[detail_id].qty += parseInt(qty));
     parseInt(sumTotalsByDetailId[detail_id].total += parseInt(total));
     sumTotalsByDetailId[detail_id].unit = unit;
-  
+    // console.log("sumTotalsByDetailId", sumTotalsByDetailId)
     return true; // Include items that are not removed
   });
+  var new_order = []
+  let data2 = [sumTotalsByDetailId]
+  sumTotalsByDetailId.forEach((item) => {
+    const existingItem = new_order.find((newOrderItem) => newOrderItem.detail_id === item.detail_id);
   
+    if (existingItem) {
+      // Update quantities and totals for existing items
+      existingItem.qty += item.qty;
+      existingItem.total += item.total;
+    } else {
+      // Add new items to new_order
+      new_order.push({ ...item });
+    }
+  });
+  
+  console.log("sumTotalsByDetailId2" , sumTotalsByDetailId)
+  console.log("******************")
 //   console.log("Updated order_detail: ", sumTotalsByDetailId);
 // console.log(getOrderData[0].order_detail)
-    console.log("getOrderData._id : ", getOrderData[0]._id)
+ 
     var getCustomer = await Customer.findOne({
       _id: getOrderData[0].customer_id
     });
-
+    console.log()
     let data_amountorder = {
       _id: (getOrderData[0]._id).toString(),
       orderId: getOrderData[0].orderId,
