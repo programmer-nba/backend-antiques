@@ -373,7 +373,7 @@ try{
   if(req.body.createAt.length == 0){
 
     var getOrderData = await Order.aggregate([
-    
+     
       {
         $lookup: {
           from: 'customers',
@@ -580,4 +580,126 @@ module.exports.SummaryByNumber = async (req,res) => {
   }catch(error){
     return res.status(500).send({message: "Internal server error", error: error.message});
   }
+}
+
+module.exports.OrderList = async (req,res) => {
+  try{
+    var getCreateAt = new Date(req.body.createAt)
+    console.log("req.body.createAt.length : ", req.body.createAt.length)
+
+    if(req.body.createAt.length == 0){
+  
+      var getOrderData = await Order.aggregate([
+        
+        {
+          $lookup: {
+            from: 'customers',
+            let: { orderId: '$customer_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: [
+                      { $toString: '$_id' },
+                      '$$orderId'
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'customerData'
+          }
+        },
+        {
+          $unwind: '$customerData'
+        },
+        {
+          $project: {
+            // message: 'Get Data Success',
+            data: {
+              _id: '$_id',
+              status: '$status',
+              fullname_th: '$customerData.fullname_th',
+              address: '$customerData.address',
+              fullname_en: '$customerData.fullname_en',
+              class: '$customerData.class',
+              order_detail: '$order_detail',
+              total: '$total',
+              queue: '$queue'
+              // all_details: 1
+            },
+          }
+        },
+        { $sort: { _id: -1 } }
+        // Additional stages in the aggregation pipeline if needed
+      ]);
+    }else{
+      var startOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T00:00:00.000Z');
+      var endOfDay = new Date(getCreateAt.toISOString().split('T')[0] + 'T23:59:59.999Z');
+      var getOrderData = await Order.aggregate([
+        { $sort: { _id: -1 } },
+        {
+          $match: {
+            createAt: {
+              $gte: startOfDay,
+              $lte: endOfDay
+            }
+          }
+        },
+        {
+          $lookup: {
+            from: 'customers',
+            let: { orderId: '$customer_id' },
+            pipeline: [
+              {
+                $match: {
+                  $expr: {
+                    $eq: [
+                      { $toString: '$_id' },
+                      '$$orderId'
+                    ]
+                  }
+                }
+              }
+            ],
+            as: 'customerData'
+          }
+        },
+        {
+          $unwind: '$customerData'
+        },
+        {
+          $project: {
+            // message: 'Get Data Success',
+            data: {
+              _id: '$_id',
+              status: '$status',
+              fullname_th: '$customerData.fullname_th',
+              address: '$customerData.address',
+              fullname_en: '$customerData.fullname_en',
+              class: '$customerData.class',
+              order_detail: '$order_detail',
+              total: '$total',
+              queue: '$queue'
+              // all_details: 1
+            },
+          }
+        },
+        { $sort: { _id: -1 } }
+        // Additional stages in the aggregation pipeline if needed
+      ]);
+    }
+    
+    
+  
+    // const getfromcustomer = await Customer.aggregate([
+      
+    // ])
+  
+  
+    // console.log("getOrderData : ", getOrderData)
+    return res.status(200).send({message: "Get Overview Success", data: getOrderData})
+    }catch(error){
+      return res.status(500).send({message: "Internal server error", error: error.message});
+    }
 }

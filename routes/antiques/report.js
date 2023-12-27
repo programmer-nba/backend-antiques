@@ -13,4 +13,5 @@ router.post("/purchasesummary", auth, Report.PurchaseSummary) // รายงา
 router.post("/ordersummaryreportbydate", auth, Report.OrderSummaryReportByDate) //รายงานการซื้อประจำวัน/ตามเลขที่ฃ
 router.post("/overviewantiques", auth, Report.OverviewAntiques)
 router.post("/summarybynumber", auth, Report.SummaryByNumber)
+router.post("/orderlist", auth, Report.OrderList)
 module.exports = router;
