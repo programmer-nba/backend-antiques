@@ -1,45 +1,95 @@
-var jwt = require("jsonwebtoken");
-var Admin = require("../models/antiques/antiques_admin.model");
-var bcrypt = require("bcrypt");
+const { Admins } = require("../models/user/antiques_admin.model");
+const { Employees } = require("../models/user/antiques_employee.model");
+const Joi = require("joi");
+const bcrypt = require("bcrypt");
 
-const REFRESH_TOKEN = process.env.GOOGLE_DRIVE_REFRESH_TOKEN;
+const validate = (data) => {
+  const schema = Joi.object({
+    username: Joi.string().required().label("username"),
+    password: Joi.string().required().label("password"),
+  });
+  return schema.validate(data);
+};
+
 
 module.exports.Login = async (req, res) => {
   try {
-    // const username = "nuk21"
-    const user = await Admin.findOne({
-      username: req.body.username,
+    const { error } = validate(req.body);
+    if (error) return res.status(400).send({ message: error.details[0].message });
+    let admin = await Admins.findOne({
+      admin_username: req.body.username,
     });
-    if (!user) {
-      return res.status(403).send({message: "User not found"});
+    if (!admin) {
+      // console.log("ไม่ใช่แอดมิน")
+      await checkEmployee(req, res);
+    } else {
+      const validPasswordAdmin = await bcrypt.compare(
+        req.body.password,
+        admin.admin_password
+      );
+      if (!validPasswordAdmin)
+        // รหัสไม่ตรง
+        return res.status(401).send({
+          message: "password is not find",
+          status: false,
+        });
+      const token = admin.generateAuthToken();
+      const ResponesData = {
+        name: admin.admin_name,
+        username: admin.admin_username,
+      };
+      return res.status(200).send({
+        token: token,
+        message: "เข้าสู่ระบบสำเร็จ",
+        result: ResponesData,
+        level: "admin",
+        status: true,
+      });
     }
-    const bcrypt_password = await bcrypt.compare(
-      req.body.password,
-      user.password
-    );
-    if (!bcrypt_password) {
-      return res.status(403).send({message: "Invalid password"});
-    }
-    // const username = req.body.username;
-
-    const secretKey = "SECRET_KEY";
-    const payload = {
-      user_id: user._id,
-      name: user.username,
-      level: user.level,
-    };
-    const token = jwt.sign(payload, secretKey, {expiresIn: "9999 years"});
-    console.log("bcrypt_password");
-    console.log("admin : ", token);
-    console.log("Payload", payload);
-    // console.log("token", token)
-
-    return res
-      .status(200)
-      .send({message: "เข้าสู่ระบบสำเร็จ", token: token, data: user});
   } catch (error) {
     return res
       .status(500)
-      .send({message: "Internal Server Error", error: error.message});
+      .send({ message: "Internal Server Error", error: error.message });
+  }
+};
+
+const checkEmployee = async (req, res) => {
+  try {
+    let employee = await Employees.findOne({
+      employee_username: req.body.username,
+    });
+    if (!employee) {
+      return res.status(401).send({
+        message: "username is not find",
+        status: false,
+      });
+    } else {
+      const validPasswordEmployee = await bcrypt.compare(
+        req.body.password,
+        employee.employee_password
+      );
+      if (!validPasswordEmployee)
+        // รหัสไม่ตรง
+        return res.status(401).send({
+          message: "password is not find",
+          status: false,
+        });
+      const token = employee.generateAuthToken();
+      const ResponesData = {
+        name: employee.employee_name,
+        username: employee.employee_iden,
+        phone: employee.employee_phone,
+        position: employee.employee_position
+      };
+      return res.status(200).send({
+        token: token,
+        message: "เข้าสู่ระบบสำเร็จ",
+        result: ResponesData,
+        level: "landlord",
+        status: true,
+      });
+    }
+  } catch (error) {
+    return res.status(500).send({ message: "Internal Server Error" });
   }
 };

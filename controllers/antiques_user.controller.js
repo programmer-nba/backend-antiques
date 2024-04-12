@@ -1,5 +1,5 @@
 var jwt = require("jsonwebtoken");
-var User = require("../models/antiques/antiques_user.model");
+var User = require("../models/user/antiques_employee.model");
 
 const REFRESH_TOKEN = process.env.GOOGLE_DRIVE_REFRESH_TOKEN;
 

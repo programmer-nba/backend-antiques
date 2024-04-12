@@ -1,5 +1,5 @@
 var jwt = require("jsonwebtoken");
-var Register = require("../models/antiques/antiques_admin.model");
+var Register = require("../models/user/antiques_admin.model");
 var bcrypt = require("bcrypt");
 
 module.exports.CreateRegister = async (req, res) => {

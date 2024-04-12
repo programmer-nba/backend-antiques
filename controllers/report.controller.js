@@ -1,6 +1,6 @@
 var jwt = require("jsonwebtoken");
 var Order = require("../models/antiques/antiques_order.model");
-var Customer = require("../models/antiques/antiques_customers.model");
+var Customer = require("../models/user/antiques_customers.model");
 var Categories_detail = require("../models/antiques/antiques_categories_details.model");
 var Categories_vendor = require("../models/antiques/antiques_categories_vendors.model");
 const { google } = require("googleapis");

@@ -36,7 +36,7 @@ app.use("/antiques/", CategoryRouter);
 // REGISTER ANTIQUES
 app.use("/antiques", RegisterAntiquesRouter);
 // Create USER
-app.use("/antiques/user/", UserAntiques)
+// app.use("/antiques/user/", UserAntiques)
 // Login 
 app.use("/antiques/", loginAntiques)
 // Customer
@@ -51,8 +51,6 @@ app.use("/antiques/report/", require('./routes/antiques/report.js'))
 app.use("/camera/", Camera)
 
 //--------------------------------------------------------------------------------------//
-
-
 
 
 const port = process.env.PORT || 9030;

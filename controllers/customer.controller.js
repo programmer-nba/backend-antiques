@@ -1,5 +1,5 @@
 var jwt = require("jsonwebtoken");
-var Customer = require("../models/antiques/antiques_customers.model");
+var Customer = require("../models/user/antiques_customers.model");
 const { google } = require("googleapis");
 const fs = require('fs');
 const multer = require('multer');
