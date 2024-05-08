@@ -23,6 +23,7 @@ app.use(express.json());
 app.use(cors({ origin: ['http://localhost:3000','http://antiques.nbadigital.tech', 'https://antiques.nbadigital.tech'], }))
 //--------------------------------------- ANTIQUES---------------------------------------//
 var CategoryRouter = require('./routes/antiques/antiques.js');
+var ProductAntiques = require('./routes/antiques/product.js')
 var RegisterAntiquesRouter = require('./routes/antiques/register_antiques.js');
 var UserAntiques = require('./routes/antiques/user_antiques.js')
 var loginAntiques = require('./routes/antiques/login.js')
@@ -32,7 +33,9 @@ var TestCamera = require('./routes/antiques/testcamera.js')
 var Camera = require('./routes/antiques/camera.js')
 
 // Antiques
-app.use("/antiques/", CategoryRouter);
+// app.use("/antiques/", CategoryRouter);
+// Product
+app.use("/antiques/product", ProductAntiques);
 // REGISTER ANTIQUES
 app.use("/antiques", RegisterAntiquesRouter);
 // Create USER
