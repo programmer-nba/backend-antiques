@@ -3,25 +3,20 @@ const Joi = require("joi");
 
 const customerSchema = new mongoose.Schema(
     {
-        id_card : {type: String},
-        class: {type:String},
-        fullname_th :{type:String},
-        fullname_en : {type:String},
-        birthday_th : {type: String},
-        birthday_en : {type: String},
-        religion : {type: String},
-        address: {type:String},
-        date_of_issue : {type:String},
-        date_of_expiry : {type:String},
-        vehicle: {type:String},
-        vehicle_detail: {type:String},
-        createAt:{type:Date},
-        updateAt:{type:Date},
-        
-       
+        id_card: { type: String },
+        class: { type: String },
+        fullname: { type: String },
+        address: { type: String },
+        subdistrict: { type: String },
+        district: { type: String },
+        province: { type: String },
+        postcode: { type: String },
+        vehicle_code: { type: String },
+        emp: { type: String, required: false, default: 'ไม่มี' },
+        timestamp: { type: Date, required: false, default: Date.now() },
     },
-    {timestamp: true}
+    { timestamp: true }
 );
 
 const customer = mongoose.model('Customer', customerSchema);
-module.exports =  customer ;
+module.exports = customer;
