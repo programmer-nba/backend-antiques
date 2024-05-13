@@ -2,6 +2,7 @@ const router = require("express").Router();
 const category = require("../../controllers/antiques/product/category.controller");
 const type = require("../../controllers/antiques/product/type.controller");
 const detail = require("../../controllers/antiques/product/detail.controller")
+const price = require("../../controllers/antiques/product/price.controller")
 const auth = require("../../lib/auth");
 
 // Category
@@ -24,5 +25,12 @@ router.get("/detail", auth, detail.getDetailAll)
 router.get("/detail/:id", auth, detail.getDetailById)
 router.put("/detail/:id", auth, detail.updateDetail)
 router.delete("/detail/:id", auth, detail.deleteDetail)
+
+// Price
+router.post("/price", auth, price.create)
+router.get("/price", auth, price.getPriceAll)
+router.get("/price/:id", auth, price.getPriceById)
+router.put("/price/:id", auth, price.updatePrice)
+router.delete("/price/:id", auth, price.deletePrice)
 
 module.exports = router;
