@@ -2,20 +2,10 @@ const { Price } = require("../../../models/antiques/product/price.model");
 
 module.exports.create = async (req, res) => {
 	try {
-		const price = await Price.findOne({
-			name: req.body.name,
-		});
-		if (price) {
-			return res.status(409).send({
-				status: false,
-				message: "มีประเภทสินค้านี้ในระบบแล้ว",
-			});
-		} else {
-			await new Price({
-				...req.body,
-			}).save();
-			return res.status(201).send({ message: "เพิ่มข้อมูลประเภทสินค้าทำเร็จ", status: true });
-		}
+		await new Price({
+			...req.body,
+		}).save();
+		return res.status(201).send({ message: "เพิ่มข้อมูลราคาสินค้าทำเร็จ", status: true });
 	} catch (error) {
 		console.error(error);
 		return res.status(500).send({ message: "Internal Server Error" });
@@ -70,9 +60,9 @@ module.exports.deletePrice = async (req, res) => {
 module.exports.updatePrice = async (req, res) => {
 	try {
 		const id = req.params.id;
-		Type.findByIdAndUpdate(id, req.body, { useFindAndModify: false, }).then((data) => {
+		Price.findByIdAndUpdate(id, req.body, { useFindAndModify: false, }).then((data) => {
 			if (!data) {
-				return res.status(404).send({
+				return res.status(404).send({ 
 					message: `ไม่สามารถเเก้ไขรายงานนี้ได้`,
 					status: false,
 				});

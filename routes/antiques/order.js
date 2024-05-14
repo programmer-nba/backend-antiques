@@ -4,7 +4,6 @@ const auth = require("../../lib/auth");
 const authAdmin = require("../../lib/auth.admin");
 
 
-
 router.get("/getOrder", auth, Order.getOrder);
 router.post("/createOrder", auth, Order.CreateDataOrder);
 router.get("/getfinishtoday", auth,Order.GetFinishToday)

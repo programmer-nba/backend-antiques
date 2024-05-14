@@ -6,6 +6,7 @@ const customerSchema = new mongoose.Schema(
         id_card: { type: String },
         class: { type: String },
         fullname: { type: String },
+        tel: { type: String },
         address: { type: String },
         subdistrict: { type: String },
         district: { type: String },

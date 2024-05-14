@@ -31,6 +31,7 @@ module.exports.createCustomer = async (req, res) => {
             id_card: req.body.id_card,
             class: req.body.class ? req.body.class : "D",
             fullname: req.body.fullname,
+            tel: req.body.tel,
             address: req.body.address,
             subdistrict: req.body.subdistrict,
             district: req.body.district,
