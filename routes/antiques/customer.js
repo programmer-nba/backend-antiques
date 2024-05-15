@@ -6,6 +6,7 @@ const authAdmin = require("../../lib/auth.admin");
 
 router.post("/", auth, Customer.createCustomer);
 router.get("/", auth, Customer.getCustomer);
+router.get("/bytel/:tel", auth, Customer.getCusByPhone);
 router.put("/:id", auth, Customer.UpdateCustomer)
 router.delete("/:id", auth, Customer.DeleteCustomer);
 

@@ -135,6 +135,7 @@ module.exports.DropdownCusID = async (req, res) => {
         return res.status(500).send({ message: "Internal server error", error: error.message });
     }
 }
+
 module.exports.DropdownCusName = async (req, res) => {
     try {
         var getDropdownCusName = await Customer.find().select("fullname_th");
@@ -152,3 +153,17 @@ module.exports.DropdownCusVehicle = async (req, res) => {
         return res.status(500).send({ message: "Internal server error", error: error.message });
     }
 }
+
+// Get Customer by Phone
+module.exports.getCusByPhone = async (req, res) => {
+	try {
+		const data = await Customer.findOne({ tel: req.params.tel });
+		if (!data) {
+			return res.status(403).send({ status: false, message: "ดึงข้อมูลไม่สำเร็จ" });
+		}
+		return res.status(200).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: data });
+	} catch (error) {
+		console.error(error);
+		return res.status(500).send({ message: "มีบางอย่างผิดพลาด", error: "server side error" });
+	}
+};
