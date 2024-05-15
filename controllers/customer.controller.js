@@ -20,16 +20,16 @@ module.exports.getCustomer = async (req, res) => {
 module.exports.createCustomer = async (req, res) => {
     try {
 
-        const chkCusName = await Customer.find({ $or: [{ fullname: req.body.fullname }, { id_card: req.body.id_card }] });
+        const chkCusName = await Customer.find({ $or: [{ fullname: req.body.fullname }, { id_card: req.body.id_card }, { tel: req.body.tel }] });
         if (chkCusName.length > 0)
             // มีการใช้ชื่อนี้ไปแล้ว
             return res.status(401).send({
-                message: "มีชื่อลูกค้านี้ในระบบแล้ว",
+                message: "มีลูกค้านี้ในระบบแล้ว",
                 status: false,
             });
         let dataCus = {
             id_card: req.body.id_card,
-            class: req.body.class ? req.body.class : "D",
+            level: req.body.level ? req.body.level : 5,
             fullname: req.body.fullname,
             tel: req.body.tel,
             address: req.body.address,
@@ -41,7 +41,6 @@ module.exports.createCustomer = async (req, res) => {
             emp: req.body.emp,
             timestamp: dayjs(Date.now()).format(""),
         };
-
         const createCustomer = new Customer(dataCus);
         createCustomer.save();
         console.log(createCustomer);

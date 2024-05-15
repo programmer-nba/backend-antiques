@@ -4,7 +4,7 @@ const Joi = require("joi");
 const customerSchema = new mongoose.Schema(
     {
         id_card: { type: String },
-        class: { type: String },
+        level: { type: Number },
         fullname: { type: String },
         tel: { type: String },
         address: { type: String },

@@ -5,6 +5,7 @@ const QueueSchema = new mongoose.Schema({
     queue_number : { type : String, required : false },
     queue_date : { type : String, required : false },
 	customer_id : { type : String, required : true },
+    status : { type : String, required : true, default : "รอจ่ายเงิน"},
 	product_detail : [{
         price_id : { type : String, required : false },
     }]

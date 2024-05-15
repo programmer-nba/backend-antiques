@@ -1,6 +1,7 @@
 const { Queue } = require("../../models/Queue/queue.model");
 // const moment = require('moment');
 
+//Insert
 module.exports.create = async (req, res) => {
     try {
         // Get today's date in YYYY/MM/DD format
@@ -79,6 +80,7 @@ module.exports.delete = async (req, res) => {
 	}
 };
 
+// Update
 module.exports.update = async (req, res) => {
 	try {
 		const id = req.params.id;
@@ -105,6 +107,7 @@ module.exports.update = async (req, res) => {
 	}
 }
 
+// ดึงข้อมมูลตาม เลขคิว
 module.exports.getByNumberAndDate = async (req, res) => {
     const { queue_number, queue_date } = req.body;
 
