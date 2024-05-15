@@ -8,10 +8,13 @@ router.post("/", auth, QueueRoutes.create);
 
 router.get("/", QueueRoutes.getAll);
 
-router.get("/:id", QueueRoutes.getById);
+router.get("/byid/:id", QueueRoutes.getById);
+
+router.get("/bynum", auth, QueueRoutes.getByNumberAndDate);
 
 router.delete("/:id", auth, QueueRoutes.delete);
 
 router.put("/:id", auth, QueueRoutes.update);
+
 
 module.exports = router;

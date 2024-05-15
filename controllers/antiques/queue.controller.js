@@ -1,29 +1,27 @@
 const { Queue } = require("../../models/Queue/queue.model");
+// const moment = require('moment');
 
 module.exports.create = async (req, res) => {
     try {
-        // Set a test date for testing purposes (e.g., '2024-05-01')
-        const testDate = '2024-05-15';  // Modify this to the date you want to test
-        const today = new Date(testDate).toISOString().split('T')[0];
+        // Get today's date in YYYY/MM/DD format
+        const today = new Date();
+        const formattedToday = `${today.getFullYear()}/${(today.getMonth() + 1).toString().padStart(2, '0')}/${today.getDate().toString().padStart(2, '0')}`;
 
-        // Find the latest queue document sorted by queue_number in descending order
-        const latestQueue = await Queue.findOne().sort({ queue_number: -1 }).limit(1);
+        // Find the latest queue document for today's date sorted by queue_number in descending order
+        const latestQueue = await Queue.findOne({ queue_date: formattedToday }).sort({ queue_number: -1 }).limit(1);
 
         let queueid = 1;
 
-        // If a latest queue exists and the queue date is today, increment the queue number
+        // If a latest queue exists, increment the queue number
         if (latestQueue) {
-            const latestQueueDate = new Date(latestQueue.queue_date).toISOString().split('T')[0];
-            if (latestQueueDate === today) {
-                queueid = parseInt(latestQueue.queue_number) + 1;
-            }
+            queueid = parseInt(latestQueue.queue_number) + 1;
         }
 
         const QueueString = queueid.toString().padStart(2, '0');
 
         const newQueue = new Queue({
             queue_number: QueueString,
-            queue_date: new Date(testDate),
+            queue_date: formattedToday,
             ...req.body,
         });
         await newQueue.save();
@@ -106,3 +104,25 @@ module.exports.update = async (req, res) => {
 		return res.status(500).send({ message: "Internal Server Error" });
 	}
 }
+
+module.exports.getByNumberAndDate = async (req, res) => {
+    const { queue_number, queue_date } = req.body;
+
+    if (!queue_number || !queue_date) {
+        return res.status(400).send({ status: false, message: "Missing queue_number or queue_date" });
+    }
+
+    try {
+        const queue = await Queue.findOne({ queue_number, queue_date });
+
+        if (!queue) {
+            return res.status(404).send({ status: false, message: "ไม่พบข้อมูล" });
+        }
+
+        return res.status(200).send({ status: true, message: "ดึงข้อมูลสำเร็จ", data: queue });
+    } catch (error) {
+        console.error("Error fetching queue data:", error);
+        return res.status(500).send({ status: false, message: "มีบางอย่างผิดพลาด", error: "server side error" });
+    }
+};
+
