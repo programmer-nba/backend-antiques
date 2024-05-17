@@ -18,7 +18,7 @@ module.exports.create = async (req, res) => {
             queueid = parseInt(latestQueue.queue_number) + 1;
         }
 
-        const QueueString = queueid.toString().padStart(2, '0');
+        const QueueString = queueid.toString().padStart(3, '0');
 
         const newQueue = new Queue({
             queue_number: QueueString,
