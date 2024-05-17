@@ -8,6 +8,7 @@ const QueueSchema = new mongoose.Schema({
     status : { type : String, required : true, default : "รอจ่ายเงิน"},
 	product_detail : [{
         price_id : { type : String, required : false },
+        qty : { type : Number, required : false },
         image : { type : String, required : false}
     }]
 });
