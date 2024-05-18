@@ -16,5 +16,7 @@ router.delete("/:id", auth, QueueRoutes.delete);
 
 router.put("/:id", auth, QueueRoutes.update);
 
+router.put("/pay/:id", auth, QueueRoutes.pay);
+
 
 module.exports = router;
