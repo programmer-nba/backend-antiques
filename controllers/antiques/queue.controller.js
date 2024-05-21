@@ -129,3 +129,49 @@ module.exports.getByNumberAndDate = async (req, res) => {
     }
 };
 
+//จ่ายเงิน
+module.exports.pay = async (req, res) => {
+    try {
+        const status = req.body.status;
+        if (status !== 'จ่ายแล้ว') {
+            return res.status(400).send({ status: false, message: "กรุณาใส่สถานะให้ถูกต้อง" });
+        }
+
+        const latestDoc = await Queue.findOne({ status: "จ่ายแล้ว" }).sort({ receipt_number: -1 }).limit(1);
+
+        let docid = 1;
+        if (latestDoc) {
+            docid = parseInt(latestDoc.receipt_number.slice(3)) + 1;
+        }
+        const docidString = 'NCG' + docid.toString().padStart(5, '0');
+
+        const queueId = req.params.id;
+        const update = await Queue.findByIdAndUpdate(
+            queueId,
+            {
+                receipt_number: docidString,
+                receipt_date: Date.now(),
+                status: status
+            },
+            { new: true } // Return the updated document
+        );
+
+        if (!update) {
+            return res.status(400).json({
+                message: 'ไม่สามารถจ่ายเงินได้',
+                status: false,
+                data: null
+            });
+        }
+
+        return res.status(200).json({
+            message: 'จ่ายเงินสำเร็จ!',
+            status: true,
+            data: update
+        });
+    } catch (error) {
+        console.error(error);
+        return res.status(500).send({ message: "Internal Server Error" });
+    }
+};
+
