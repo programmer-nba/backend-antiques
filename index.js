@@ -42,7 +42,7 @@ app.use("/antiques", RegisterAntiquesRouter);
 // Create USER
 // app.use("/antiques/user/", UserAntiques)
 // Login 
-app.use("/antiques/", loginAntiques)
+app.use("/antiques/login", loginAntiques)
 // Customer
 app.use("/antiques/customer/", Customer)
 // Order data 
