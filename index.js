@@ -22,13 +22,13 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
 //--------------------------------------- ANTIQUES---------------------------------------//
-var CategoryRouter = require('./routes/antiques/antiques.js');
+// var CategoryRouter = require('./routes/antiques/antiques.js');
 var ProductAntiques = require('./routes/antiques/product.js')
 var RegisterAntiquesRouter = require('./routes/antiques/register_antiques.js');
-var UserAntiques = require('./routes/antiques/user_antiques.js')
+// var UserAntiques = require('./routes/antiques/user_antiques.js')
 var loginAntiques = require('./routes/antiques/login.js')
 var Customer = require('./routes/antiques/customer.js')
-var Order = require('./routes/antiques/order.js')
+// var Order = require('./routes/antiques/order.js')
 var TestCamera = require('./routes/antiques/testcamera.js')
 var Camera = require('./routes/antiques/camera.js')
 var Queue = require('./routes/Queue/queue.route.js')
@@ -46,7 +46,7 @@ app.use("/antiques/login", loginAntiques)
 // Customer
 app.use("/antiques/customer/", Customer)
 // Order data 
-app.use("/antiques/order/", Order)
+// app.use("/antiques/order/", Order)
 // TEST CAMERA
 app.use("/camera/test/", TestCamera);
 // Report 
